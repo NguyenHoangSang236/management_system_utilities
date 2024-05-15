@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class CheckUtils {
-    //check email is valid or not
+    //Check email is valid or not
     //    It allows numeric values from 0 to 9.
     //    Both uppercase and lowercase letters from a to z are allowed.
     //    Allowed are underscore “_”, hyphen “-“, and dot “.”
