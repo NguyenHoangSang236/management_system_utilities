@@ -114,6 +114,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+<!--				<configuration>-->
+<!--					<classifier>exec</classifier>-->
+<!--				</configuration>-->
 				<!--Add this to make this project usable when getting imported by other projects-->
 				<executions>
 					<execution>
