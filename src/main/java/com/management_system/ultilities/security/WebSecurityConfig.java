@@ -42,10 +42,11 @@ public class WebSecurityConfig {
 //                .formLogin(AbstractHttpConfigurer::disable)
 //                .httpBasic(AbstractHttpConfigurer::disable)
 //                .logout(LogoutConfigurer::disable)
-//                .authorizeHttpRequests(
-//                        (request) -> request.requestMatchers("/authen/**").authenticated()
-//                                .anyRequest().permitAll()
-//                )
+                .authorizeHttpRequests(
+                        (request) -> request
+//                                .requestMatchers("/authen/**").authenticated()
+                                .anyRequest().permitAll()
+                )
                 .sessionManagement(
                         sessionManagement -> {
                             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
