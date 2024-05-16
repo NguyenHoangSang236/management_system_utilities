@@ -1,4 +1,4 @@
-package com.management_system.ultilities.security;
+package com.management_system.ultilities.utils;
 
 import com.management_system.ultilities.api.Account;
 import com.management_system.ultilities.constant.ConstantValue;
