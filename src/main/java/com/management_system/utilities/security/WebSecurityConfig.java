@@ -1,8 +1,8 @@
-package com.management_system.ultilities.security;
+package com.management_system.utilities.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.management_system.ultilities.api.ApiResponse;
+import com.management_system.utilities.entities.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;

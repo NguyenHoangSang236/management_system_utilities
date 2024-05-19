@@ -114,20 +114,20 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-<!--				<configuration>-->
-<!--					<classifier>exec</classifier>-->
-<!--				</configuration>-->
+				<configuration>
+					<classifier>exec</classifier>
+				</configuration>
 				<!--Add this to make this project usable when getting imported by other projects-->
-				<executions>
-					<execution>
-						<goals>
-							<goal>repackage</goal>
-						</goals>
-						<configuration>
-							<classifier>exec</classifier>
-						</configuration>
-					</execution>
-				</executions>
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<goals>-->
+<!--							<goal>repackage</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<classifier>exec</classifier>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
 			</plugin>
 		</plugins>
 	</build>

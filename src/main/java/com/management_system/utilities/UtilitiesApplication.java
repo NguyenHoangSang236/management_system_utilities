@@ -1,4 +1,4 @@
-package com.management_system.ultilities;
+package com.management_system.utilities;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

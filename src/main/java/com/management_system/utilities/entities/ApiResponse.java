@@ -1,4 +1,4 @@
-package com.management_system.ultilities.api;
+package com.management_system.utilities.entities;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;

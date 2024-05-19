@@ -1,4 +1,4 @@
-package com.management_system.ultilities;
+package com.management_system.utilities;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
