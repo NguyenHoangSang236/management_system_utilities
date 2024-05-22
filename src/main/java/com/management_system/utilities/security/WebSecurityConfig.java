@@ -30,7 +30,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     final JwtAuthenticationFilter jwtAuthenticationFilter;
-    final AuthenticationProvider authenticationProvider;
+//    final AuthenticationProvider authenticationProvider;
     final UserDetailsService userDetailsService;
 
     @Bean
@@ -44,7 +44,7 @@ public class WebSecurityConfig {
 //                .logout(LogoutConfigurer::disable)
                 .authorizeHttpRequests(
                         (request) -> request
-//                                .requestMatchers("/authen/**").authenticated()
+                                .requestMatchers("/authen/**").authenticated()
                                 .anyRequest().permitAll()
                 )
                 .sessionManagement(
@@ -52,8 +52,8 @@ public class WebSecurityConfig {
                             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                         }
                 )
-                .userDetailsService(userDetailsService)
-                .authenticationProvider(authenticationProvider)
+//                .userDetailsService(userDetailsService)
+//                .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(
                         exception -> {

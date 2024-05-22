@@ -2,6 +2,7 @@ package com.management_system.utilities.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.management_system.utilities.constant.TokenType;
 import com.management_system.utilities.entities.ApiResponse;
 import com.management_system.utilities.entities.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
@@ -59,6 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (authHeader != null && authHeader.startsWith("Bearer")) {
                 // get jwt from header ('Bearer' length is 7 => get jwt after index 7 of header)
                 jwt = jwtUtils.getJwtFromRequest(request);
+                System.out.println("Client jwt: " + jwt);
                 String refreshToken = request.getHeader("refresh_token");
 
                 // if jwt is expired, or user has not been authorized
@@ -66,17 +68,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         securityContext == null ||
                         securityContext instanceof AnonymousAuthenticationToken) &&
                         refreshToken != null) {
+                    System.out.println("Client JWT expired");
                     // check refresh token from database
                     tokenInfo = refreshTokenRepo.getRefreshTokenInfoByToken(refreshToken);
+                    System.out.println("Got token info from db");
 
                     if (tokenInfo != null) {
-                        String newJwtToken = jwtUtils.generateJwt(tokenInfo);
+                        String newJwtToken = jwtUtils.generateJwt(tokenInfo, TokenType.JWT);
+                        System.out.println("New Client JWT: " + newJwtToken);
                         jwtUtils.setJwtToClientCookie(newJwtToken);
                     }
                     else {
                         response.setStatus(HttpStatus.UNAUTHORIZED.value());
                         response.setContentType("application/json");
-                        response.getWriter().write(convertObjectToJson(new ApiResponse("failed", "Invalid refresh token")));
+                        response.getWriter().write(convertObjectToJson(
+                                new ApiResponse("failed", "Invalid refresh token")
+                        ));
                     }
                 }
                 else {
@@ -92,24 +99,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-
-                // if this account has already logged -> proceed filter
-//                if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//                    UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(userName);
-
-                    // if jwt is valid -> proceed
-//                    if (jwtUtils.isJwtValid(jwt, userDetails)) {
-//                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-//                                userDetails.getUsername(),
-//                                null,
-//                                userDetails.getAuthorities()
-//                        );
-//
-//                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//
-//                        SecurityContextHolder.getContext().setAuthentication(authToken);
-//                    }
-//                }
             }
 
             filterChain.doFilter(request, response);

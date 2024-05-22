@@ -3,6 +3,7 @@ package com.management_system.utilities.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.constant.ConstantValue;
 //import com.management_system.utilities.repository.AccountRepository;
+import com.management_system.utilities.constant.TokenType;
 import com.management_system.utilities.entities.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Jwts;
@@ -18,9 +19,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 
@@ -28,6 +27,9 @@ import java.util.function.Function;
 public class JwtUtils {
     @Autowired
     RefreshTokenRepository refreshTokenRepo;
+
+    @Autowired
+    DbUtils dbUtils;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORIZATION_PREFIX = "Bearer ";
@@ -69,7 +71,32 @@ public class JwtUtils {
     }
 
 
-    public String generateJwt(TokenInfo refreshToken) {
+    public void createRefreshTokenForAccount(String userName, String role) {
+        TokenInfo tokenInfo = refreshTokenRepo.getRefreshTokenInfoByUserName(userName);
+
+        if(tokenInfo != null) {
+            String newRefreshToken = generateJwt(tokenInfo, TokenType.REFRESH_TOKEN);
+            Map<String, Object> map = new HashMap<>();
+            map.put("token", newRefreshToken);
+
+            dbUtils.updateSpecificFields(tokenInfo.getId(), map, TokenInfo.class);
+
+        }
+        else {
+            tokenInfo = TokenInfo.builder()
+                    .id(UUID.randomUUID().toString())
+                    .userName(userName)
+                    .roles(Arrays.asList(new String[] {role}))
+                    .build();
+            String newRefreshToken = generateJwt(tokenInfo, TokenType.REFRESH_TOKEN);
+            tokenInfo.setToken(newRefreshToken);
+
+            refreshTokenRepo.save(tokenInfo);
+        }
+    }
+
+
+    public String generateJwt(TokenInfo refreshToken, TokenType type) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> claims = mapper.convertValue(refreshToken, Map.class);
@@ -79,7 +106,12 @@ public class JwtUtils {
                     .setClaims(claims)
                     .setSubject((String) claims.get("userName"))
                     .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + ConstantValue.ONE_WEEK_MILLISECOND))
+                    .setExpiration(
+                            type == TokenType.REFRESH_TOKEN ? new Date(System.currentTimeMillis() + ConstantValue.ONE_WEEK_MILLISECOND)
+                                    : type == TokenType.JWT
+                                    ? new Date(System.currentTimeMillis() + ConstantValue.SIX_HOURS_MILLISECOND)
+                                    : new Date()
+                    )
                     .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                     .compact();
         }
@@ -98,8 +130,11 @@ public class JwtUtils {
     public TokenInfo getRefreshTokenInfoFromJwt(String jwt) {
         Claims claims = getAllClaimsFromJwt(jwt);
         ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> claimMap = mapper.convertValue(claims, Map.class);
+        claimMap.remove("iat");
+        claimMap.remove("exp");
 
-        return mapper.convertValue(claims, TokenInfo.class);
+        return mapper.convertValue(claimMap, TokenInfo.class);
     }
 
 

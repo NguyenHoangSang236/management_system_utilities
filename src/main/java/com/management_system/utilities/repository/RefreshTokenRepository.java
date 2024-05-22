@@ -9,4 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface RefreshTokenRepository extends MongoRepository<TokenInfo, String> {
     @Query("{'token': ?0}")
     TokenInfo getRefreshTokenInfoByToken(String token);
+
+    @Query("{'user_name': ?0}")
+    TokenInfo getRefreshTokenInfoByUserName(String userName);
 }
