@@ -3,6 +3,8 @@ package com.management_system.utilities.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.management_system.utilities.entities.ApiResponse;
+import com.management_system.utilities.web.CustomUrlFilter;
+import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
@@ -23,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +35,7 @@ public class WebSecurityConfig {
     final JwtAuthenticationFilter jwtAuthenticationFilter;
 //    final AuthenticationProvider authenticationProvider;
     final UserDetailsService userDetailsService;
+    final CustomUrlFilter customUrlFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -42,11 +46,11 @@ public class WebSecurityConfig {
 //                .formLogin(AbstractHttpConfigurer::disable)
 //                .httpBasic(AbstractHttpConfigurer::disable)
 //                .logout(LogoutConfigurer::disable)
-                .authorizeHttpRequests(
-                        (request) -> request
-                                .requestMatchers("/authen/**").authenticated()
-                                .anyRequest().permitAll()
-                )
+//                .authorizeHttpRequests(
+//                        (request) -> request
+//                                .requestMatchers("/authen/**").authenticated()
+//                                .anyRequest().permitAll()
+//                )
                 .sessionManagement(
                         sessionManagement -> {
                             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
