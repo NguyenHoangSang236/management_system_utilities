@@ -1,4 +1,4 @@
-package com.management_system.utilities.security;
+package com.management_system.utilities.web.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

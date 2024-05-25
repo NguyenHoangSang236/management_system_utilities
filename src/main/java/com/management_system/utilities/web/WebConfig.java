@@ -1,6 +1,6 @@
 package com.management_system.utilities.web;
 
-import com.management_system.utilities.security.JwtAuthenticationFilter;
+import com.management_system.utilities.web.security.JwtAuthenticationFilter;
 import com.management_system.utilities.web.logging.RequestGetLogger;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;

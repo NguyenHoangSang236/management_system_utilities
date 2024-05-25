@@ -1,5 +1,6 @@
 package com.management_system.utilities.entities;
 
+import com.management_system.utilities.core.usecase.UseCase;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
@@ -10,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiResponse implements Serializable {
+public class ApiResponse implements UseCase.OutputValue, Serializable {
     private String result;
     private Object content;
     private String message;
