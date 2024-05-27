@@ -35,32 +35,10 @@ public class JwtUtils {
     private static final String AUTHORIZATION_PREFIX = "Bearer ";
 
 
-//    @Autowired
-//    AccountRepository accountRepo;
+    public TokenInfo getTokenInfoFromHttpRequest(HttpServletRequest request) {
+        return getRefreshTokenInfoFromJwt(getJwtFromRequest(request));
+    }
 
-
-//    public boolean isJwtValid(String jwt, UserDetails userDetails) {
-//        final String userName = userDetails.getUsername();
-//        final Account account = accountRepo.getAccountByUserName(userName);
-//
-//        return getRefreshTokenInfoFromJwt(jwt).equals(userName) && !isJwtExpired(jwt) && jwt.equals(account.getCurrentJwt());
-//    }
-//
-//
-//    public boolean isJwtExpired(String jwt) {
-//        String userName = getRefreshTokenInfoFromJwt(jwt);
-//        Account account = accountRepo.getAccountByUserName(userName);
-//
-//        return getJwtExpiration(jwt).before(new Date()) && !account.getCurrentJwt().isEmpty();
-//    }
-//
-//
-//    public void expireJwt(String jwt) {
-//        String userName = getRefreshTokenInfoFromJwt(jwt);
-//        Account account = accountRepo.getAccountByUserName(userName);
-//        account.setCurrentJwt("");
-//        accountRepo.save(account);
-//    }
 
     public boolean isRefreshTokenValid(String token) {
         final TokenInfo tokenInfo = refreshTokenRepo.getRefreshTokenInfoByToken(token);

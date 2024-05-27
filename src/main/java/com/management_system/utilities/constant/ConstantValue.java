@@ -6,4 +6,6 @@ public class ConstantValue {
     public static final int SIX_HOURS_MILLISECOND = 1000 * 60 * 60 * 6;
     public static final int SIX_HOURS_SECOND = 3600 * 6;
     public static final String REQUEST_ID = "request_id";
+    public static final String FIREBASE_PRIVATE_KEY_FILE_PATH = "managementsystem-firebase-private-key.json";
+    public static final String FIREBASE_STORAGE_BUCKET_NAME = "managementsystem-8bbd0.appspot.com";
 }
