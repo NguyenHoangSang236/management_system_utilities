@@ -80,7 +80,7 @@ public class WebSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/unauthen/**", "/error");
+        return (web) -> web.ignoring().requestMatchers("/unauthen/**", "/eureka/**", "/error");
     }
 
 
