@@ -17,6 +17,12 @@ public class ValueParsingUtils {
             ApiResponse res = new ApiResponse("failed", "Error at JSON parsing", HttpStatus.INTERNAL_SERVER_ERROR);
             return res.toString();
         }
+    }
 
+
+    // parse a string to ID string with given pattern
+    public String parseStringToId(String str, String spacePattern, boolean isUpperCase) {
+        String idStr = isUpperCase ? str.trim().toUpperCase() : str.trim().toLowerCase();
+        return idStr.replace(" ", spacePattern);
     }
 }
