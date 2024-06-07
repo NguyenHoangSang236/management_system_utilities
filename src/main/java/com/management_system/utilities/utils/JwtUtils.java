@@ -57,7 +57,7 @@ public class JwtUtils {
             Map<String, Object> map = new HashMap<>();
             map.put("token", newRefreshToken);
 
-            dbUtils.updateSpecificFields(tokenInfo.getId(), map, TokenInfo.class);
+            dbUtils.updateSpecificFields("id", tokenInfo.getId(), map, TokenInfo.class);
 
         }
         else {

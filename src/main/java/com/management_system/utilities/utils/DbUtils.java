@@ -15,8 +15,8 @@ public class DbUtils {
     private MongoTemplate mongoTemplate;
 
 
-    public void updateSpecificFields(String id, Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
-        Query query = new Query(Criteria.where("id").is(id));
+    public void updateSpecificFields(String idKey, String idVal, Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
+        Query query = new Query(Criteria.where(idKey).is(idVal));
         Update update = new Update();
 
         // set all key and value from 'fieldsToUpdate' to 'update'
