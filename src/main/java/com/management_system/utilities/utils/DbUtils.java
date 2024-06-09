@@ -1,6 +1,9 @@
 package com.management_system.utilities.utils;
 
+import com.management_system.utilities.entities.exceptions.DataNotFoundException;
+import com.mongodb.client.result.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
@@ -16,6 +19,12 @@ public class DbUtils {
 
 
     public void updateSpecificFields(String idKey, String idVal, Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
+        Object obj = mongoTemplate.findById(idVal, recordClass);
+
+        if(obj == null) {
+            throw new DataNotFoundException("Data with " + idKey + ": " + idVal + " not found");
+        }
+
         Query query = new Query(Criteria.where(idKey).is(idVal));
         Update update = new Update();
 
