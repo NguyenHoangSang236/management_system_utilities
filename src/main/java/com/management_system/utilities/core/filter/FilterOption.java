@@ -1,6 +1,10 @@
 package com.management_system.utilities.core.filter;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class FilterOption {}
+@AllArgsConstructor
+public abstract class FilterOption {
+    String type;
+}
