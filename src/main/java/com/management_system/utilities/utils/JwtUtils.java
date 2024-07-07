@@ -85,7 +85,8 @@ public class JwtUtils {
                     .setSubject((String) claims.get("userName"))
                     .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(
-                            type == TokenType.REFRESH_TOKEN ? new Date(System.currentTimeMillis() + ConstantValue.ONE_WEEK_MILLISECOND)
+                            type == TokenType.REFRESH_TOKEN
+                                    ? new Date(System.currentTimeMillis() + ConstantValue.ONE_WEEK_MILLISECOND)
                                     : type == TokenType.JWT
                                     ? new Date(System.currentTimeMillis() + ConstantValue.SIX_HOURS_MILLISECOND)
                                     : new Date()
