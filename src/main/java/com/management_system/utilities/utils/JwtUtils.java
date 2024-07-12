@@ -3,6 +3,7 @@ package com.management_system.utilities.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.constant.ConstantValue;
 //import com.management_system.utilities.repository.AccountRepository;
+import com.management_system.utilities.constant.enumuration.CredentialEnum;
 import com.management_system.utilities.constant.enumuration.TokenType;
 import com.management_system.utilities.entities.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
@@ -27,6 +28,9 @@ import java.util.function.Function;
 public class JwtUtils {
     @Autowired
     RefreshTokenRepository refreshTokenRepo;
+
+    @Autowired
+    CredentialsUtils credentialsUtils;
 
     @Autowired
     DbUtils dbUtils;
@@ -163,7 +167,8 @@ public class JwtUtils {
 
 
     public Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(ConstantValue.SECRET_SIGNING_KEY);
+        String secretSigningKey = credentialsUtils.getCredentials(CredentialEnum.SECRET_SIGNING_KEY.name());
+        byte[] keyBytes = Decoders.BASE64.decode(secretSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

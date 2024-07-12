@@ -7,6 +7,8 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.management_system.utilities.constant.ConstantValue;
+import com.management_system.utilities.constant.enumuration.CredentialEnum;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,19 +19,22 @@ import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.UUID;
 
 @Service
 public class FirebaseUtils {
+    @Autowired
+    CredentialsUtils credentialsUtils;
+
     private String getUploadFileUrl(File file, String fileName) throws IOException {
-        BlobId blobId = BlobId.of(ConstantValue.FIREBASE_STORAGE_BUCKET_NAME, fileName);
+        String firebaseStorageBucketName = credentialsUtils.getCredentials(CredentialEnum.FIREBASE_STORAGE_BUCKET_NAME.name());
+        BlobId blobId = BlobId.of(firebaseStorageBucketName, fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
-        InputStream inputStream = FirebaseUtils.class.getClassLoader().getResourceAsStream(ConstantValue.FIREBASE_PRIVATE_KEY_FILE_PATH);
+        InputStream inputStream = FirebaseUtils.class.getClassLoader().getResourceAsStream(credentialsUtils.getCredentials(CredentialEnum.FIREBASE_PRIVATE_KEY_FILE_PATH.name()));
         Credentials credentials = GoogleCredentials.fromStream(inputStream);
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
 
-        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/" + ConstantValue.FIREBASE_STORAGE_BUCKET_NAME + "/o/%s?alt=media";
+        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/" + firebaseStorageBucketName + "/o/%s?alt=media";
         return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
     }
 
