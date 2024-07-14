@@ -61,4 +61,9 @@ public class DbUtils {
 
         return mongoTemplate.find(query, tartgetClass);
     }
+
+
+    public <T> T getDataById(String id, Class<T> tartgetClass) {
+        return mongoTemplate.findById(id, tartgetClass);
+    }
 }
