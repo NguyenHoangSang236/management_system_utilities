@@ -42,6 +42,7 @@ public class DbUtils {
     public <T extends FilterOption, U> List<U> filterData(T filterOptions, Pagination pagination, Class<U> tartgetClass) {
         Criteria criteria = new Criteria();
         Map<String, Object> optionMap = filterOptions.toMap();
+
         for(String key: optionMap.keySet()) {
             Object value = optionMap.get(key);
 
@@ -64,6 +65,12 @@ public class DbUtils {
 
 
     public <T> T getDataById(String id, Class<T> tartgetClass) {
-        return mongoTemplate.findById(id, tartgetClass);
+        Criteria criteria = new Criteria();
+        criteria.and("_id").is(id);
+        Query query = new Query().addCriteria(criteria);
+
+        List<T> resList = mongoTemplate.find(query, tartgetClass);
+
+        return resList.isEmpty() ? null : resList.get(0);
     }
 }

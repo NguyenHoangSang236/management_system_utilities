@@ -8,7 +8,7 @@ public class CredentialsUtils {
     public String getCredentials(String key) {
         Dotenv dotenv = Dotenv
                 .configure()
-                .filename("src/main/resources/system_credentials.env")
+                .filename("system_credentials.env")
                 .load();
 
         return dotenv.get(key);
