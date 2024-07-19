@@ -11,4 +11,4 @@ Github URL for other services:
 
 General system design
 
-![Example Image](https://drive.google.com/uc?id=10-g0L42P3X6QuyPGrkBAt_DqR1sllxs7)
+![Example Image](https://drive.google.com/uc?id=1IFjPfe3EmtF-NTx6Mx6NHYWe4s1NU3vr)
