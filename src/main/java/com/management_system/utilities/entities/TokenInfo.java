@@ -2,6 +2,7 @@ package com.management_system.utilities.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.management_system.utilities.entities.database.MongoDbEntity;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -18,9 +19,9 @@ import java.util.List;
 @NoArgsConstructor
 @Document("refresh_token")
 @Builder
-public class TokenInfo {
+public class TokenInfo extends MongoDbEntity {
     @Id
-    @Field(name = "id")
+    @Indexed(unique = true)
     String id;
 
     @Field(name = "token")
