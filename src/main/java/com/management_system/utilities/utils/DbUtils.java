@@ -1,5 +1,7 @@
 package com.management_system.utilities.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.core.filter.FilterOption;
 import com.management_system.utilities.entities.Pagination;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
@@ -47,9 +49,17 @@ public class DbUtils {
             Object value = optionMap.get(key);
 
             if(value != null) {
+                // search regex
                 if(key.contains("name") && !value.toString().isBlank()) {
                     criteria.and(key).regex(".*" + value + ".*", "i");
                 }
+                // search exactly elements in a field with type List
+                else if(value instanceof List) {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    List<String> list = objectMapper.convertValue(value, new TypeReference<>() {});
+                    criteria.and(key).all(list);
+                }
+                // search exactly
                 else {
                     criteria.and(key).is(value);
                 }

@@ -44,7 +44,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final TokenInfo tokenInfo;
-        final SecurityContext securityContext = SecurityContextHolder.getContext();
 
         try {
             response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
@@ -62,8 +61,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // if jwt is expired, or user has not been authorized
                 if ((jwtUtils.isTokenExpired(jwt) ||
-                        securityContext == null ||
-                        securityContext instanceof AnonymousAuthenticationToken) &&
+                        SecurityContextHolder.getContext() == null ||
+                        SecurityContextHolder.getContext() instanceof AnonymousAuthenticationToken) &&
                         refreshToken != null) {
                     logger.error("Client JWT expired");
                     // check refresh token from database

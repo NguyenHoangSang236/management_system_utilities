@@ -31,4 +31,8 @@ public abstract class MongoDbEntity {
     @JsonProperty(value = "creation_date")
     @Field(name = "creation_date")
     Date creationDate;
+
+    @JsonProperty(value = "updated_user_name")
+    @Field(name = "updated_user_name")
+    String updatedUserName;
 }
