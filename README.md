@@ -7,7 +7,7 @@ Github URL for other services:
 - Eureka server: https://github.com/NguyenHoangSang236/management_system_eureka_server
 - Redis service: https://github.com/NguyenHoangSang236/management_system_redis_service
 - Authentication service: https://github.com/NguyenHoangSang236/management_system_authentication_service
-- Ingredient service: https://github.com/NguyenHoangSang236/management_system_ingredient_service
+- Resource service: https://github.com/NguyenHoangSang236/management_system_resource_service
 
 General system design
 
