@@ -50,4 +50,27 @@ public class ValueParsingUtils {
 
         return map;
     }
+
+
+    // convert snake case text to camel text
+    public String fromSnakeCaseToCamel(String text) {
+        String[] strArr = text.split("");
+        StringBuilder strBuilder = new StringBuilder();
+
+        for(int i = 0; i < strArr.length; i++) {
+            if(strArr[i].equals(" ")) {
+                return null;
+            }
+
+            if(!strArr[i].equals("-") && !strArr[i].equals("_")) {
+                strBuilder.append(strArr[i]);
+            }
+            else {
+                i++;
+                strBuilder.append(strArr[i].toUpperCase());
+            }
+        }
+
+        return strBuilder.toString();
+    }
 }

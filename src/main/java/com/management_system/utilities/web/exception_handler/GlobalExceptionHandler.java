@@ -3,6 +3,7 @@ package com.management_system.utilities.web.exception_handler;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.management_system.utilities.entities.ApiResponse;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
+import com.management_system.utilities.entities.exceptions.IdNotFoundException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {DataNotFoundException.class})
     ResponseEntity<ApiResponse> handleDataNotFoundException(DataNotFoundException ex) {
         return new ResponseEntity<>(new ApiResponse("failed", ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(value = {IdNotFoundException.class})
+    ResponseEntity<ApiResponse> handleIdNotFoundException(IdNotFoundException ex) {
+        return new ResponseEntity<>(new ApiResponse("failed", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ResponseBody

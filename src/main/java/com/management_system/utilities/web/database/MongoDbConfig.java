@@ -1,5 +1,6 @@
 package com.management_system.utilities.web.database;
 
+import com.mongodb.WriteConcern;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -12,6 +13,9 @@ public class MongoDbConfig {
     @Bean
     public MongoTemplate mongoTemplate(MongoDatabaseFactory databaseFactory, MappingMongoConverter converter) {
         converter.setTypeMapper(new DefaultMongoTypeMapper(null));
-        return new MongoTemplate(databaseFactory, converter);
+        MongoTemplate mongoTemplate = new MongoTemplate(databaseFactory, converter); // Adjust your database name
+        mongoTemplate.setWriteConcern(WriteConcern.ACKNOWLEDGED);
+
+        return mongoTemplate;
     }
 }
