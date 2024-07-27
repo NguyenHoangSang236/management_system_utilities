@@ -11,9 +11,6 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 		scanBasePackages = {"com.management_system.utilities"}
 )
 public class UtilitiesApplication {
-	@Autowired
-	CredentialsUtils credentialsUtils;
-
 	public static void main(String[] args) {
 		SpringApplication.run(UtilitiesApplication.class, args);
 	}
