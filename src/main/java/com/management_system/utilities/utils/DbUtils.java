@@ -168,6 +168,39 @@ public class DbUtils {
     }
 
 
+    // use for merging data from request to an entity
+    public <T> T mergeObjectFromRequest(T object, Object request) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            Map<String, Object> reqMap = objectMapper.convertValue(request, Map.class);
+
+            Class<T> entityClass = (Class<T>) object.getClass();
+
+            for (Map.Entry<String, Object> entry : reqMap.entrySet()) {
+                Field field = entityClass.getDeclaredField(valueParsingUtils.fromSnakeCaseToCamel(entry.getKey()));
+                field.setAccessible(true);
+
+                Object value = entry.getValue();
+
+                if (field.getType().isEnum()) {
+                    @SuppressWarnings("rawtypes")
+                    Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
+                    value = Enum.valueOf(enumType, value.toString());
+                }
+
+                field.set(object, value);
+            }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return object;
+    }
+
+
     private void updateMongoDbFields(Update update) {
         update.inc("version", 1);
         update.set("last_update_date", new Date());
