@@ -13,7 +13,8 @@ import java.util.UUID;
 @Slf4j
 public class CustomUrlFilter implements Filter {
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
 
 
     @Override
@@ -29,5 +30,6 @@ public class CustomUrlFilter implements Filter {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+    }
 }

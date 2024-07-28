@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.management_system.utilities.constant.enumuration.FilterType;
 import com.management_system.utilities.core.filter.FilterOption;
 
 import java.io.IOException;
@@ -30,9 +29,9 @@ public class FilterOptionsDeserializer extends StdDeserializer<FilterOption> {
 
 
     @Override
-    public FilterOption deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
+    public FilterOption deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         final JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        final ObjectMapper mapper = (ObjectMapper)jsonParser.getCodec();
+        final ObjectMapper mapper = (ObjectMapper) jsonParser.getCodec();
 
         return mapper.treeToValue(node, this.targetClass);
     }

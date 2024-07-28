@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class DbUtils {
     public void updateSpecificFields(String idKey, String idVal, Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
         Object obj = mongoTemplate.findById(idVal, recordClass);
 
-        if(obj == null) {
+        if (obj == null) {
             throw new DataNotFoundException("Data with " + idKey + ": " + idVal + " not found");
         }
 
@@ -46,7 +46,7 @@ public class DbUtils {
         Update update = new Update();
 
         // set all key and value from 'fieldsToUpdate' to 'update'
-        for(String key: fieldsToUpdate.keySet()) {
+        for (String key : fieldsToUpdate.keySet()) {
             update.set(key, fieldsToUpdate.get(key));
         }
 
@@ -61,14 +61,14 @@ public class DbUtils {
      use for document which DOES NOT NEED version management fields
      */
     public void updateSpecificFields(Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
-        if(fieldsToUpdate.get("id") == null) {
+        if (fieldsToUpdate.get("id") == null) {
             throw new IdNotFoundException("Can not found id field");
         }
 
         String idVal = fieldsToUpdate.get("id").toString();
         Object obj = mongoTemplate.findById(idVal, recordClass);
 
-        if(obj == null) {
+        if (obj == null) {
             throw new DataNotFoundException("Data with " + "_id" + ": " + idVal + " not found");
         }
 
@@ -76,7 +76,7 @@ public class DbUtils {
         Update update = new Update();
 
         // set all key and value from 'fieldsToUpdate' to 'update'
-        for(String key: fieldsToUpdate.keySet()) {
+        for (String key : fieldsToUpdate.keySet()) {
             update.set(key, fieldsToUpdate.get(key));
         }
 
@@ -93,18 +93,19 @@ public class DbUtils {
         Criteria criteria = new Criteria();
         Map<String, Object> optionMap = filterOptions.toMap();
 
-        for(String key: optionMap.keySet()) {
+        for (String key : optionMap.keySet()) {
             Object value = optionMap.get(key);
 
-            if(value != null) {
+            if (value != null) {
                 // search regex
-                if(key.contains("name") && !value.toString().isBlank()) {
+                if (key.contains("name") && !value.toString().isBlank()) {
                     criteria.and(key).regex(".*" + value + ".*", "i");
                 }
                 // search exactly elements in a field with type List
-                else if(value instanceof List) {
+                else if (value instanceof List) {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    List<String> list = objectMapper.convertValue(value, new TypeReference<>() {});
+                    List<String> list = objectMapper.convertValue(value, new TypeReference<>() {
+                    });
                     criteria.and(key).all(list);
                 }
                 // search exactly
@@ -159,8 +160,7 @@ public class DbUtils {
 
                 field.set(mongoEntity, value);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -192,8 +192,7 @@ public class DbUtils {
                 field.set(object, value);
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -208,7 +207,7 @@ public class DbUtils {
         String userName = "Anonymous";
         UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth != null ) {
+        if (auth != null) {
             userName = auth.getPrincipal().toString();
         }
 

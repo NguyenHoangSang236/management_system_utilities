@@ -10,5 +10,7 @@ import java.util.Map;
 public abstract class FilterOption {
     String type;
 
-    public Map<String, Object> toMap() {return null;}
+    public Map<String, Object> toMap() {
+        return null;
+    }
 }

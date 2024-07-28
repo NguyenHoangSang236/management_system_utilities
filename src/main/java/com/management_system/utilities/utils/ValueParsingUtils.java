@@ -5,7 +5,6 @@ import com.management_system.utilities.entities.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -36,10 +35,10 @@ public class ValueParsingUtils {
         Map<String, Object> map = objectMapper.convertValue(obj, Map.class);
 
         for (String key : map.keySet()) {
-            if(map.get(key) instanceof Map) {
+            if (map.get(key) instanceof Map) {
                 Map<String, Object> subMap = (Map<String, Object>) map.get(key);
 
-                for (String k: subMap.keySet()) {
+                for (String k : subMap.keySet()) {
                     String newKey = key + "." + k;
                     map.put(newKey, subMap.get(k));
                 }
@@ -57,15 +56,14 @@ public class ValueParsingUtils {
         String[] strArr = text.split("");
         StringBuilder strBuilder = new StringBuilder();
 
-        for(int i = 0; i < strArr.length; i++) {
-            if(strArr[i].equals(" ")) {
+        for (int i = 0; i < strArr.length; i++) {
+            if (strArr[i].equals(" ")) {
                 return null;
             }
 
-            if(!strArr[i].equals("-") && !strArr[i].equals("_")) {
+            if (!strArr[i].equals("-") && !strArr[i].equals("_")) {
                 strBuilder.append(strArr[i]);
-            }
-            else {
+            } else {
                 i++;
                 strBuilder.append(strArr[i].toUpperCase());
             }

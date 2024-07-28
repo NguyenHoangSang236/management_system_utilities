@@ -7,6 +7,7 @@ import com.management_system.utilities.entities.ApiResponse;
 import com.management_system.utilities.entities.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
 import com.management_system.utilities.utils.JwtUtils;
+import com.management_system.utilities.utils.SecurityUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -41,11 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws IOException {
+        JwtUtils jwtUtils1 = new JwtUtils();
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final TokenInfo tokenInfo;
 
         try {
+            SecurityUtils.storeSecurityContext();
             response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, HEAD, OPTIONS, DELETE");
@@ -73,16 +75,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         String newJwtToken = jwtUtils.generateJwt(tokenInfo, TokenType.JWT);
                         logger.info("New Client JWT: " + newJwtToken);
                         jwtUtils.setJwtToClientCookie(newJwtToken);
-                    }
-                    else {
+                    } else {
                         response.setStatus(HttpStatus.UNAUTHORIZED.value());
                         response.setContentType("application/json");
                         response.getWriter().write(convertObjectToJson(
                                 new ApiResponse("failed", "Invalid refresh token")
                         ));
                     }
-                }
-                else {
+                } else {
                     // get token info from jwt
                     tokenInfo = jwtUtils.getRefreshTokenInfoFromJwt(jwt);
 
@@ -100,9 +100,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
+            e.printStackTrace();
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setContentType("application/json");
             response.getWriter().write(convertObjectToJson(new ApiResponse("failed", e.getMessage())));
+        } finally {
+            SecurityUtils.clearSecurityContext();
         }
     }
 

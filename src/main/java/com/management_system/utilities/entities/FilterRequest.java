@@ -13,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class FilterRequest implements Serializable {
     @JsonProperty("filter_options")
-    FilterOption  filterOption;
+    FilterOption filterOption;
 
     Pagination pagination;
 }

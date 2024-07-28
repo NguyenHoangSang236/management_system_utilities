@@ -27,9 +27,9 @@ public class RedisDataDeserializer extends StdDeserializer<RedisData> {
         super(src);
     }
 
-    public RedisData deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
-        JsonNode node = (JsonNode)jsonParser.getCodec().readTree(jsonParser);
-        ObjectMapper mapper = (ObjectMapper)jsonParser.getCodec();
-        return (RedisData) mapper.treeToValue(node, this.targetClass);
+    public RedisData deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+        JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+        ObjectMapper mapper = (ObjectMapper) jsonParser.getCodec();
+        return mapper.treeToValue(node, this.targetClass);
     }
 }

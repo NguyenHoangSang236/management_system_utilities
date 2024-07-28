@@ -2,11 +2,11 @@ package com.management_system.utilities.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.constant.ConstantValue;
-//import com.management_system.utilities.repository.AccountRepository;
 import com.management_system.utilities.constant.enumuration.CredentialEnum;
 import com.management_system.utilities.constant.enumuration.TokenType;
 import com.management_system.utilities.entities.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -15,7 +15,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import io.jsonwebtoken.Claims;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -26,18 +25,14 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtils {
-    @Autowired
-    RefreshTokenRepository refreshTokenRepo;
-
-    @Autowired
-    CredentialsUtils credentialsUtils;
-
-    @Autowired
-    DbUtils dbUtils;
-
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORIZATION_PREFIX = "Bearer ";
-
+    @Autowired
+    RefreshTokenRepository refreshTokenRepo;
+    @Autowired
+    CredentialsUtils credentialsUtils;
+    @Autowired
+    DbUtils dbUtils;
 
     public TokenInfo getTokenInfoFromHttpRequest(HttpServletRequest request) {
         return getRefreshTokenInfoFromJwt(getJwtFromRequest(request));
@@ -56,19 +51,18 @@ public class JwtUtils {
     public void createRefreshTokenForAccount(String userName, String role) {
         TokenInfo tokenInfo = refreshTokenRepo.getRefreshTokenInfoByUserName(userName);
 
-        if(tokenInfo != null) {
+        if (tokenInfo != null) {
             String newRefreshToken = generateJwt(tokenInfo, TokenType.REFRESH_TOKEN);
             Map<String, Object> map = new HashMap<>();
             map.put("token", newRefreshToken);
 
             dbUtils.updateSpecificFields("id", tokenInfo.getId(), map, TokenInfo.class);
 
-        }
-        else {
+        } else {
             tokenInfo = TokenInfo.builder()
                     .id(UUID.randomUUID().toString())
                     .userName(userName)
-                    .roles(Arrays.asList(new String[] {role}))
+                    .roles(Arrays.asList(role))
                     .build();
             String newRefreshToken = generateJwt(tokenInfo, TokenType.REFRESH_TOKEN);
             tokenInfo.setToken(newRefreshToken);
@@ -97,8 +91,7 @@ public class JwtUtils {
                     )
                     .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                     .compact();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -137,7 +130,7 @@ public class JwtUtils {
     }
 
 
-    public void setJwtToClientCookie(String jwt){
+    public void setJwtToClientCookie(String jwt) {
         var cookie = new Cookie(AUTHORIZATION_HEADER, AUTHORIZATION_PREFIX + jwt);
         cookie.setMaxAge(ConstantValue.SIX_HOURS_SECOND);
         cookie.setPath("/");
