@@ -14,7 +14,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -61,7 +60,7 @@ public class JwtUtils {
             tokenInfo = TokenInfo.builder()
                     .id(UUID.randomUUID().toString())
                     .userName(userName)
-                    .roles(Arrays.asList(role))
+                    .roles(Collections.singletonList(role))
                     .build();
             String newRefreshToken = generateJwt(tokenInfo, TokenType.REFRESH_TOKEN);
             tokenInfo.setToken(newRefreshToken);

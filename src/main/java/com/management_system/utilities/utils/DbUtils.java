@@ -9,7 +9,6 @@ import com.management_system.utilities.entities.database.MongoDbEntity;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
 import com.management_system.utilities.entities.exceptions.IdNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
