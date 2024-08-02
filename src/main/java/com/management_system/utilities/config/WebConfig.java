@@ -1,8 +1,9 @@
-package com.management_system.utilities.web;
+package com.management_system.utilities.config;
 
-import com.management_system.utilities.web.logging.RequestGetLogger;
-import com.management_system.utilities.web.security.JwtAuthenticationFilter;
+import com.management_system.utilities.config.logging.RequestGetLogger;
+import com.management_system.utilities.config.security.JwtAuthenticationFilter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -12,8 +13,11 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@RequiredArgsConstructor
 @Configuration
 public class WebConfig {
+    final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -52,8 +56,6 @@ public class WebConfig {
     @Bean
     public FilterRegistrationBean<OncePerRequestFilter> oncePerRequestFilterFilterRegistrationBean() {
         FilterRegistrationBean<OncePerRequestFilter> registrationBean = new FilterRegistrationBean<>();
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter();
-
         registrationBean.setFilter(jwtAuthenticationFilter);
         registrationBean.setOrder(3);
 

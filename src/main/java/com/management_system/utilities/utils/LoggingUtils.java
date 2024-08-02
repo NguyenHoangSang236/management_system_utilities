@@ -3,6 +3,7 @@ package com.management_system.utilities.utils;
 import com.management_system.utilities.constant.ConstantValue;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -16,9 +17,9 @@ import java.util.Map;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class LoggingUtils {
-    @Autowired
-    ValueParsingUtils valueParsingUtils;
+    final ValueParsingUtils valueParsingUtils;
 
 
     public void logHttpServletRequest(HttpServletRequest request, Object body) {

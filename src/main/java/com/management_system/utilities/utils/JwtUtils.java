@@ -13,6 +13,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -23,16 +24,14 @@ import java.util.*;
 import java.util.function.Function;
 
 
+@RequiredArgsConstructor
 @Service
 public class JwtUtils {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORIZATION_PREFIX = "Bearer ";
-    @Autowired
-    RefreshTokenRepository refreshTokenRepo;
-    @Autowired
-    CredentialsUtils credentialsUtils;
-    @Autowired
-    DbUtils dbUtils;
+    final RefreshTokenRepository refreshTokenRepo;
+    final CredentialsUtils credentialsUtils;
+    final DbUtils dbUtils;
 
     public TokenInfo getTokenInfoFromHttpRequest(HttpServletRequest request) {
         return getRefreshTokenInfoFromJwt(getJwtFromRequest(request));

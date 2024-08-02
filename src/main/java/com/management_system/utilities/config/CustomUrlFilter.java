@@ -1,4 +1,4 @@
-package com.management_system.utilities.web;
+package com.management_system.utilities.config;
 
 
 import com.management_system.utilities.constant.ConstantValue;

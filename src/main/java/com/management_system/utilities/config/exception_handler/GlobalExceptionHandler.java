@@ -1,4 +1,4 @@
-package com.management_system.utilities.web.exception_handler;
+package com.management_system.utilities.config.exception_handler;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.management_system.utilities.entities.ApiResponse;

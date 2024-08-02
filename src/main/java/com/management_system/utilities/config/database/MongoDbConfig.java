@@ -1,4 +1,4 @@
-package com.management_system.utilities.web.database;
+package com.management_system.utilities.config.database;
 
 import com.mongodb.WriteConcern;
 import org.springframework.context.annotation.Bean;

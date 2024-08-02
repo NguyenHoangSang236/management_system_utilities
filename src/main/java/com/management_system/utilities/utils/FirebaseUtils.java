@@ -7,6 +7,7 @@ import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.management_system.utilities.constant.enumuration.CredentialEnum;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,10 +20,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+@RequiredArgsConstructor
 @Service
 public class FirebaseUtils {
-    @Autowired
-    CredentialsUtils credentialsUtils;
+    final CredentialsUtils credentialsUtils;
 
     private String getUploadFileUrl(File file, String fileName) throws IOException {
         String firebaseStorageBucketName = credentialsUtils.getCredentials(CredentialEnum.FIREBASE_STORAGE_BUCKET_NAME.name());

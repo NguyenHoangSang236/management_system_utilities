@@ -8,6 +8,7 @@ import com.management_system.utilities.entities.Pagination;
 import com.management_system.utilities.entities.database.MongoDbEntity;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
 import com.management_system.utilities.entities.exceptions.IdNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -23,13 +24,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Service
 public class DbUtils {
-    @Autowired
-    MongoTemplate mongoTemplate;
+    final MongoTemplate mongoTemplate;
 
-    @Autowired
-    ValueParsingUtils valueParsingUtils;
+    final ValueParsingUtils valueParsingUtils;
 
     /*
      for id is not default "_id" and is not in the request body

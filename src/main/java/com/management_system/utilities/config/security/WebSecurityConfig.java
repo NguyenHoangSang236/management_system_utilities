@@ -1,9 +1,9 @@
-package com.management_system.utilities.web.security;
+package com.management_system.utilities.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.management_system.utilities.entities.ApiResponse;
-import com.management_system.utilities.web.CustomUrlFilter;
+import com.management_system.utilities.config.CustomUrlFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
@@ -30,7 +30,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     final JwtAuthenticationFilter jwtAuthenticationFilter;
-    //    final AuthenticationProvider authenticationProvider;
     final UserDetailsService userDetailsService;
     final CustomUrlFilter customUrlFilter;
 

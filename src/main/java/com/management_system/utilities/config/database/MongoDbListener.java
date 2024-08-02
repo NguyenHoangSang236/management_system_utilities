@@ -1,10 +1,11 @@
-package com.management_system.utilities.web.database;
+package com.management_system.utilities.config.database;
 
 import com.management_system.utilities.entities.database.MongoDbEntity;
 import com.management_system.utilities.utils.SecurityUtils;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,7 @@ public class MongoDbListener extends AbstractMongoEventListener<MongoDbEntity> {
         entity.setLastUpdateDate(new Date());
 
         String userName = "Anonymous";
-        UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null) {
             userName = auth.getPrincipal().toString();
