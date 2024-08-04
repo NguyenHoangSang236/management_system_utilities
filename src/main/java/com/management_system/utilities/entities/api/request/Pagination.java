@@ -1,4 +1,4 @@
-package com.management_system.utilities.entities;
+package com.management_system.utilities.entities.api.request;
 
 import lombok.*;
 

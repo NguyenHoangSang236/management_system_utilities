@@ -1,7 +1,7 @@
 package com.management_system.utilities.config.exception_handler;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.management_system.utilities.entities.ApiResponse;
+import com.management_system.utilities.entities.api.response.ApiResponse;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
 import com.management_system.utilities.entities.exceptions.IdNotFoundException;
 import org.springframework.core.Ordered;

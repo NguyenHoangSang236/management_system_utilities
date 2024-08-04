@@ -1,8 +1,7 @@
-package com.management_system.utilities.entities;
+package com.management_system.utilities.entities.database;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.management_system.utilities.entities.database.MongoDbEntity;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;

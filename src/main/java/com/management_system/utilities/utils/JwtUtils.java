@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.constant.ConstantValue;
 import com.management_system.utilities.constant.enumuration.CredentialEnum;
 import com.management_system.utilities.constant.enumuration.TokenType;
-import com.management_system.utilities.entities.TokenInfo;
+import com.management_system.utilities.entities.database.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

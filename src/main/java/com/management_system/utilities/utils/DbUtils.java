@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.core.filter.FilterOption;
-import com.management_system.utilities.entities.Pagination;
+import com.management_system.utilities.entities.api.request.FilterRequest;
+import com.management_system.utilities.entities.api.request.FilterSort;
+import com.management_system.utilities.entities.api.request.Pagination;
 import com.management_system.utilities.entities.database.MongoDbEntity;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
 import com.management_system.utilities.entities.exceptions.IdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -19,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -88,9 +92,11 @@ public class DbUtils {
     /*
     filter data with pagination
      */
-    public <T extends FilterOption, U> List<U> filterData(T filterOptions, Pagination pagination, Class<U> tartgetClass) {
+    public <T extends FilterOption, U> List<U> filterData(FilterRequest request, Class<U> tartgetClass) {
         Criteria criteria = new Criteria();
-        Map<String, Object> optionMap = filterOptions.toMap();
+        Map<String, Object> optionMap = request.getFilterOption().toMap();
+        Pagination pagination = request.getPagination();
+        Sort sort = getSortFromRequestFilterSort(request.getSorts());
 
         for (String key : optionMap.keySet()) {
             Object value = optionMap.get(key);
@@ -115,8 +121,18 @@ public class DbUtils {
         }
 
         Query query = new Query()
-                .addCriteria(criteria)
-                .with(PageRequest.of(pagination.getPage() - 1, pagination.getSize()));
+                .addCriteria(criteria);
+
+        if(pagination != null && pagination.getPage() > 0 && pagination.getSize() > 0) {
+            query.with(PageRequest.of(pagination.getPage() - 1, pagination.getSize()));
+        }
+        else {
+            query.with(PageRequest.of(0, 20));
+        }
+
+        if(sort != null) {
+            query.with(sort);
+        }
 
         return mongoTemplate.find(query, tartgetClass);
     }
@@ -167,7 +183,9 @@ public class DbUtils {
     }
 
 
-    // use for merging data from request to an entity
+    /*
+    use for merging data from request to an entity
+     */
     public <T> T mergeObjectFromRequest(T object, Object request) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -211,5 +229,25 @@ public class DbUtils {
         }
 
         update.set("updated_user_name", userName);
+    }
+
+
+    
+    /*
+    get Sort from request's FilterSort list
+     */
+    private Sort getSortFromRequestFilterSort(List<FilterSort> sorts) {
+        if(sorts != null && !sorts.isEmpty()) {
+            List<Sort.Order> orderList = new ArrayList<>();
+
+            sorts.stream().forEach(
+                    filterSort -> orderList.add(new Sort.Order(filterSort.getType(), filterSort.getKey()))
+            );
+
+            return Sort.by(orderList);
+        }
+        else {
+            return null;
+        }
     }
 }
