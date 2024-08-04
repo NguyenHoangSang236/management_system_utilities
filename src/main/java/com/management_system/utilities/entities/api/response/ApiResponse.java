@@ -1,4 +1,4 @@
-package com.management_system.utilities.entities;
+package com.management_system.utilities.entities.api.response;
 
 import com.management_system.utilities.core.usecase.UseCase;
 import lombok.*;

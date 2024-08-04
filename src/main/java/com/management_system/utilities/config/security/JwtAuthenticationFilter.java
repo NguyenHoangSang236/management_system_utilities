@@ -3,8 +3,8 @@ package com.management_system.utilities.config.security;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.constant.enumuration.TokenType;
-import com.management_system.utilities.entities.ApiResponse;
-import com.management_system.utilities.entities.TokenInfo;
+import com.management_system.utilities.entities.api.response.ApiResponse;
+import com.management_system.utilities.entities.database.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
 import com.management_system.utilities.utils.JwtUtils;
 import com.management_system.utilities.utils.SecurityUtils;
@@ -101,9 +101,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setContentType("application/json");
             response.getWriter().write(convertObjectToJson(new ApiResponse("failed", e.getMessage())));
-        } finally {
-            SecurityUtils.clearSecurityContext();
         }
+//        finally {
+//            SecurityUtils.clearSecurityContext();
+//        }
     }
 
 

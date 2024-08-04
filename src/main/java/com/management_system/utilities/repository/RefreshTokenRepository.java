@@ -1,6 +1,6 @@
 package com.management_system.utilities.repository;
 
-import com.management_system.utilities.entities.TokenInfo;
+import com.management_system.utilities.entities.database.TokenInfo;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;

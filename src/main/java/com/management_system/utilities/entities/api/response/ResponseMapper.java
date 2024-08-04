@@ -1,4 +1,4 @@
-package com.management_system.utilities.entities;
+package com.management_system.utilities.entities.api.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
