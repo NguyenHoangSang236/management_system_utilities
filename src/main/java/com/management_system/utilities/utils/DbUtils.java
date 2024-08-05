@@ -123,14 +123,13 @@ public class DbUtils {
         Query query = new Query()
                 .addCriteria(criteria);
 
-        if(pagination != null && pagination.getPage() > 0 && pagination.getSize() > 0) {
+        if (pagination != null && pagination.getPage() > 0 && pagination.getSize() > 0) {
             query.with(PageRequest.of(pagination.getPage() - 1, pagination.getSize()));
-        }
-        else {
+        } else {
             query.with(PageRequest.of(0, 20));
         }
 
-        if(sort != null) {
+        if (sort != null) {
             query.with(sort);
         }
 
@@ -232,12 +231,11 @@ public class DbUtils {
     }
 
 
-    
     /*
     get Sort from request's FilterSort list
      */
     private Sort getSortFromRequestFilterSort(List<FilterSort> sorts) {
-        if(sorts != null && !sorts.isEmpty()) {
+        if (sorts != null && !sorts.isEmpty()) {
             List<Sort.Order> orderList = new ArrayList<>();
 
             sorts.stream().forEach(
@@ -245,8 +243,7 @@ public class DbUtils {
             );
 
             return Sort.by(orderList);
-        }
-        else {
+        } else {
             return null;
         }
     }
