@@ -15,6 +15,8 @@ public class ApiResponse implements UseCase.OutputValue, Serializable {
     private String result;
     private Object content;
     private String message;
+    private String jwt;
+    private String refreshToken;
     private HttpStatus status;
 
     public ApiResponse(String result, Object content, HttpStatus status) {
@@ -32,15 +34,5 @@ public class ApiResponse implements UseCase.OutputValue, Serializable {
     public ApiResponse(String result, Object content) {
         this.result = result;
         this.content = content;
-    }
-
-    @Override
-    public String toString() {
-        return "ApiResponse{" +
-                "result='" + result + '\'' +
-                ", content=" + content +
-                ", message='" + message + '\'' +
-                ", status=" + status +
-                '}';
     }
 }

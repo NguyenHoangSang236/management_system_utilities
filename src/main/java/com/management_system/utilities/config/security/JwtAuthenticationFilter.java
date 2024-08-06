@@ -8,6 +8,7 @@ import com.management_system.utilities.entities.database.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
 import com.management_system.utilities.utils.JwtUtils;
 import com.management_system.utilities.utils.SecurityUtils;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,14 +57,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // get jwt from header ('Bearer' length is 7 => get jwt after index 7 of header)
                 jwt = jwtUtils.getJwtFromRequest(request);
                 logger.info("Client jwt: " + jwt);
-                String refreshToken = request.getHeader("refresh_token");
+                boolean isJwtExpired = jwtUtils.isTokenExpired(jwt);
 
                 // if jwt is expired, or user has not been authorized
-                if ((jwtUtils.isTokenExpired(jwt) ||
+                if (isJwtExpired ||
                         SecurityContextHolder.getContext() == null ||
-                        SecurityContextHolder.getContext() instanceof AnonymousAuthenticationToken) &&
-                        refreshToken != null) {
+                        SecurityContextHolder.getContext() instanceof AnonymousAuthenticationToken) {
                     logger.error("Client JWT expired");
+                    String refreshToken = jwtUtils.getRefreshTokenFromRequest(request);
                     // check refresh token from database
                     tokenInfo = refreshTokenRepo.getRefreshTokenInfoByToken(refreshToken);
                     logger.info("Got token info from db");
@@ -71,7 +72,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     if (tokenInfo != null) {
                         String newJwtToken = jwtUtils.generateJwt(tokenInfo, TokenType.JWT);
                         logger.info("New Client JWT: " + newJwtToken);
-                        jwtUtils.setJwtToClientCookie(newJwtToken);
+//                        jwtUtils.setJwtToClientCookie(newJwtToken);
+
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                tokenInfo.getUserName(),
+                                null,
+                                tokenInfo.getAuthorities()
+                        );
+
+                        logger.info("Auth token user name: " + authToken.getName());
+                        authToken.getAuthorities().stream().forEach(authority -> System.out.println("Authority: " + authority.getAuthority()));
+
+                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
                     } else {
                         response.setStatus(HttpStatus.UNAUTHORIZED.value());
                         response.setContentType("application/json");
@@ -96,7 +110,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setContentType("application/json");

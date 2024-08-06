@@ -7,6 +7,7 @@ import com.management_system.utilities.constant.enumuration.TokenType;
 import com.management_system.utilities.entities.database.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -49,14 +50,7 @@ public class JwtUtils {
     public void createRefreshTokenForAccount(String userName, String role) {
         TokenInfo tokenInfo = refreshTokenRepo.getRefreshTokenInfoByUserName(userName);
 
-        if (tokenInfo != null) {
-            String newRefreshToken = generateJwt(tokenInfo, TokenType.REFRESH_TOKEN);
-            Map<String, Object> map = new HashMap<>();
-            map.put("token", newRefreshToken);
-
-            dbUtils.updateSpecificFields("id", tokenInfo.getId(), map, TokenInfo.class);
-
-        } else {
+        if (tokenInfo == null)  {
             tokenInfo = TokenInfo.builder()
                     .id(UUID.randomUUID().toString())
                     .userName(userName)
@@ -82,7 +76,7 @@ public class JwtUtils {
                     .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(
                             type == TokenType.REFRESH_TOKEN
-                                    ? new Date(System.currentTimeMillis() + ConstantValue.ONE_WEEK_MILLISECOND)
+                                    ? new Date(System.currentTimeMillis() + ConstantValue.FOREVER)
                                     : type == TokenType.JWT
                                     ? new Date(System.currentTimeMillis() + ConstantValue.SIX_HOURS_MILLISECOND)
                                     : new Date()
@@ -97,7 +91,17 @@ public class JwtUtils {
 
 
     public boolean isTokenExpired(String token) {
-        return getJwtExpiration(token).before(new Date());
+        try {
+            return getJwtExpiration(token).before(new Date());
+        }
+        catch (ExpiredJwtException expiredJwtException) {
+            return true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+
+            return false;
+        }
     }
 
 
@@ -123,7 +127,18 @@ public class JwtUtils {
         if (jwtToken == null) {
             return null;
         } else {
-            return request.getHeader("Authorization").substring(7);
+            return jwtToken.substring(7);
+        }
+    }
+
+
+    public String getRefreshTokenFromRequest(HttpServletRequest request) {
+        String token = request.getHeader("RefreshToken");
+
+        if (token == null) {
+            return null;
+        } else {
+            return token;
         }
     }
 
