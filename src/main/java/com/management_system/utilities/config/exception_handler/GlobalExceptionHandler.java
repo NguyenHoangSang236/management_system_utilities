@@ -23,46 +23,94 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {AuthenticationException.class})
     ResponseEntity<ApiResponse> handleAuthenticationException(AuthenticationException ex) {
         ex.printStackTrace();
-        return new ResponseEntity<>(new ApiResponse("failed", ex.getMessage()), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(ApiResponse.builder()
+                .result("failed")
+                .message(ex.getMessage())
+                .status(HttpStatus.UNAUTHORIZED)
+                .build(),
+                HttpStatus.UNAUTHORIZED
+        );
     }
 
     @ResponseBody
     @ExceptionHandler(value = {BadCredentialsException.class})
     ResponseEntity<ApiResponse> handleBadCredentialsException(BadCredentialsException ex) {
         ex.printStackTrace();
-        return new ResponseEntity<>(new ApiResponse("failed", ex.getMessage()), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result("failed")
+                        .message(ex.getMessage())
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .build(),
+                HttpStatus.UNAUTHORIZED
+        );
     }
 
     @ResponseBody
     @ExceptionHandler(value = {AccessDeniedException.class})
     ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException ex) {
         ex.printStackTrace();
-        return new ResponseEntity<>(new ApiResponse("failed", ex.getMessage()), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result("failed")
+                        .message(ex.getMessage())
+                        .status(HttpStatus.FORBIDDEN)
+                        .build(),
+                HttpStatus.FORBIDDEN
+        );
     }
 
     @ResponseBody
     @ExceptionHandler(value = {FirebaseMessagingException.class})
     ResponseEntity<ApiResponse> handleFirebaseMessagingException(FirebaseMessagingException ex) {
         ex.printStackTrace();
-        return new ResponseEntity<>(new ApiResponse("failed", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result("failed")
+                        .message(ex.getMessage())
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .build(),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 
     @ResponseBody
     @ExceptionHandler(value = {DataNotFoundException.class})
     ResponseEntity<ApiResponse> handleDataNotFoundException(DataNotFoundException ex) {
-        return new ResponseEntity<>(new ApiResponse("failed", ex.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result("failed")
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NO_CONTENT)
+                        .build(),
+                HttpStatus.NO_CONTENT
+        );
     }
 
     @ResponseBody
     @ExceptionHandler(value = {IdNotFoundException.class})
     ResponseEntity<ApiResponse> handleIdNotFoundException(IdNotFoundException ex) {
-        return new ResponseEntity<>(new ApiResponse("failed", ex.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result("failed")
+                        .message(ex.getMessage())
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
     @ResponseBody
     @ExceptionHandler(value = {Exception.class})
     ResponseEntity<ApiResponse> handleException(Exception ex) {
         ex.printStackTrace();
-        return new ResponseEntity<>(new ApiResponse("failed", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result("failed")
+                        .message(ex.getMessage())
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .build(),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 }

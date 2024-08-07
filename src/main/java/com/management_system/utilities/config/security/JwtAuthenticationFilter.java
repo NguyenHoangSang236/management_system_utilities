@@ -2,13 +2,10 @@ package com.management_system.utilities.config.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.management_system.utilities.constant.enumuration.TokenType;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import com.management_system.utilities.entities.database.TokenInfo;
-import com.management_system.utilities.repository.RefreshTokenRepository;
 import com.management_system.utilities.utils.JwtUtils;
 import com.management_system.utilities.utils.SecurityUtils;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +28,6 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     final JwtUtils jwtUtils;
-    final RefreshTokenRepository refreshTokenRepo;
 
 
     @Override
@@ -64,35 +60,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext() == null ||
                         SecurityContextHolder.getContext() instanceof AnonymousAuthenticationToken) {
                     logger.error("Client JWT expired");
-                    String refreshToken = jwtUtils.getRefreshTokenFromRequest(request);
-                    // check refresh token from database
-                    tokenInfo = refreshTokenRepo.getRefreshTokenInfoByToken(refreshToken);
-                    logger.info("Got token info from db");
-
-                    if (tokenInfo != null) {
-                        String newJwtToken = jwtUtils.generateJwt(tokenInfo, TokenType.JWT);
-                        logger.info("New Client JWT: " + newJwtToken);
-//                        jwtUtils.setJwtToClientCookie(newJwtToken);
-
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                tokenInfo.getUserName(),
-                                null,
-                                tokenInfo.getAuthorities()
-                        );
-
-                        logger.info("Auth token user name: " + authToken.getName());
-                        authToken.getAuthorities().stream().forEach(authority -> System.out.println("Authority: " + authority.getAuthority()));
-
-                        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                    } else {
-                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                        response.setContentType("application/json");
-                        response.getWriter().write(convertObjectToJson(
-                                new ApiResponse("failed", "Invalid refresh token")
-                        ));
-                    }
+                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                    response.setContentType("application/json");
+                    response.getWriter().write(
+                            convertObjectToJson(ApiResponse.builder().result("failed").message("JWT has been expired").build())
+                    );
                 } else {
                     // get token info from jwt
                     tokenInfo = jwtUtils.getRefreshTokenInfoFromJwt(jwt);
@@ -110,12 +82,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setContentType("application/json");
-            response.getWriter().write(convertObjectToJson(new ApiResponse("failed", e.getMessage())));
+            response.getWriter().write(
+                    convertObjectToJson(ApiResponse.builder().result("failed").message(e.getMessage()).build())
+            );
         }
 //        finally {
 //            SecurityUtils.clearSecurityContext();
