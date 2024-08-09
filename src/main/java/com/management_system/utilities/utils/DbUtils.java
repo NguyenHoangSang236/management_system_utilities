@@ -103,10 +103,11 @@ public class DbUtils {
 
             if (value != null) {
                 // search regex
-                if (key.contains("name") && !value.toString().isBlank()) {
+                if ((key.contains("name") || key.contains("email") || key.contains("address") || key.contains("phone_number")) &&
+                        !value.toString().isBlank()) {
                     criteria.and(key).regex(".*" + value + ".*", "i");
                 }
-                // search exactly elements in a field with type List
+                // search exact elements in a field with type List
                 else if (value instanceof List) {
                     ObjectMapper objectMapper = new ObjectMapper();
                     List<String> list = objectMapper.convertValue(value, new TypeReference<>() {

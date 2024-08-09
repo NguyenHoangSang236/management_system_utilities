@@ -23,9 +23,23 @@ public class ValueParsingUtils {
 
 
     // parse a string to ID string with given pattern
-    public String parseStringToId(String str, String spacePattern, boolean isUpperCase) {
-        String idStr = isUpperCase ? str.trim().toUpperCase() : str.trim().toLowerCase();
-        return idStr.replace(" ", spacePattern);
+    public String parseStringToId(String spacePattern, boolean isUpperCase, String... str) {
+        StringBuilder strBuilder = new StringBuilder();
+
+        for (int i = 0; i < str.length; i++) {
+            if (str[i] != null) {
+                strBuilder.append(isUpperCase
+                        ? str[i].trim().replace(" ", spacePattern).toUpperCase()
+                        : str[i].trim().replace(" ", spacePattern).toLowerCase()
+                );
+
+                if (i != str.length - 1) {
+                    strBuilder.append(spacePattern);
+                }
+            }
+        }
+
+        return strBuilder.toString();
     }
 
 

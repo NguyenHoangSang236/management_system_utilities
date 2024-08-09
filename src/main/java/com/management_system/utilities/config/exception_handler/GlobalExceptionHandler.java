@@ -4,8 +4,10 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
 import com.management_system.utilities.entities.exceptions.IdNotFoundException;
+import com.mongodb.MongoWriteException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -98,6 +100,47 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .build(),
                 HttpStatus.BAD_REQUEST
         );
+    }
+
+    @ResponseBody
+    @ExceptionHandler(value = {DuplicateKeyException.class})
+    ResponseEntity<ApiResponse> handleMongoWriteException(DuplicateKeyException ex) {
+        if (ex.getCause() instanceof MongoWriteException mongoWriteEx) {
+
+            int code = mongoWriteEx.getCode();
+
+            if (code == 11000) {
+                String jsonStr = mongoWriteEx.getError().getMessage().substring(mongoWriteEx.getError().getMessage().indexOf("{"));
+
+                return new ResponseEntity<>(
+                        ApiResponse.builder()
+                                .result("failed")
+                                .message("Duplicated data: " + jsonStr)
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build(),
+                        HttpStatus.BAD_REQUEST
+                );
+            } else {
+                return new ResponseEntity<>(
+                        ApiResponse.builder()
+                                .result("failed")
+                                .message(mongoWriteEx.getMessage())
+                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .build(),
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                );
+            }
+
+        } else {
+            return new ResponseEntity<>(
+                    ApiResponse.builder()
+                            .result("failed")
+                            .message(ex.getMessage())
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build(),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     @ResponseBody

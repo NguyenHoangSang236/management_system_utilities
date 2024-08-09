@@ -20,7 +20,6 @@ import java.util.List;
 @Builder
 public class TokenInfo extends MongoDbEntity {
     @Id
-    @Indexed(unique = true)
     String id;
 
     @Field(name = "token")
