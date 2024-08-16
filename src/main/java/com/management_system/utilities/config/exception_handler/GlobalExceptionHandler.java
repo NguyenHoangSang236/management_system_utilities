@@ -5,6 +5,7 @@ import com.management_system.utilities.entities.api.response.ApiResponse;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
 import com.management_system.utilities.entities.exceptions.IdNotFoundException;
 import com.mongodb.MongoWriteException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DuplicateKeyException;
@@ -141,6 +142,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     HttpStatus.BAD_REQUEST
             );
         }
+    }
+
+    @ResponseBody
+    @ExceptionHandler(value = {ExpiredJwtException.class})
+    ResponseEntity<ApiResponse> handleExpiredJwtException(ExpiredJwtException ex) {
+        ex.printStackTrace();
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result("failed")
+                        .message(ex.getMessage())
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .build(),
+                HttpStatus.UNAUTHORIZED
+        );
     }
 
     @ResponseBody

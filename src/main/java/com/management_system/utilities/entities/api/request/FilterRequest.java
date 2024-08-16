@@ -12,9 +12,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FilterRequest implements Serializable {
+public class FilterRequest<T extends FilterOption> implements Serializable {
     @JsonProperty("filter_options")
-    FilterOption filterOption;
+    T filterOption;
 
     Pagination pagination;
 

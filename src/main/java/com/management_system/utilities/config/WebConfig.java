@@ -42,22 +42,22 @@ public class WebConfig {
     }
 
 
-    @Bean
-    public FilterRegistrationBean<CustomUrlFilter> filterRegistrationBean() {
-        FilterRegistrationBean<CustomUrlFilter> registrationBean = new FilterRegistrationBean<>();
-        CustomUrlFilter customURLFilter = new CustomUrlFilter();
-
-        registrationBean.setFilter(customURLFilter);
-        registrationBean.setOrder(2);
-
-        return registrationBean;
-    }
+//    @Bean
+//    public FilterRegistrationBean<CustomUrlFilter> filterRegistrationBean() {
+//        FilterRegistrationBean<CustomUrlFilter> registrationBean = new FilterRegistrationBean<>();
+//        CustomUrlFilter customURLFilter = new CustomUrlFilter();
+//
+//        registrationBean.setFilter(customURLFilter);
+//        registrationBean.setOrder(2);
+//
+//        return registrationBean;
+//    }
 
     @Bean
     public FilterRegistrationBean<OncePerRequestFilter> oncePerRequestFilterFilterRegistrationBean() {
         FilterRegistrationBean<OncePerRequestFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(jwtAuthenticationFilter);
-        registrationBean.setOrder(3);
+        registrationBean.setOrder(1);
 
         return registrationBean;
     }

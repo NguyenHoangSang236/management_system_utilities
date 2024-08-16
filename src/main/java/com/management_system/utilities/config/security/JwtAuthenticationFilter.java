@@ -2,9 +2,11 @@ package com.management_system.utilities.config.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.management_system.utilities.constant.ConstantValue;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import com.management_system.utilities.entities.database.TokenInfo;
 import com.management_system.utilities.utils.JwtUtils;
+import com.management_system.utilities.utils.LoggingUtils;
 import com.management_system.utilities.utils.SecurityUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,12 +24,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     final JwtUtils jwtUtils;
+    final LoggingUtils loggingUtils;
 
 
     @Override
@@ -48,6 +52,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Max-Age", "3600");
             response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
 
+            // generate request ID
+            String requestId = UUID.randomUUID().toString();
+            request.setAttribute(ConstantValue.REQUEST_ID, requestId);
+            log.info("Current Request ID: {}", request.getAttribute(ConstantValue.REQUEST_ID).toString());
+
             // if header is not null and starts with word 'Bearer' -> proceed filter
             if (authHeader != null && authHeader.startsWith("Bearer")) {
                 // get jwt from header ('Bearer' length is 7 => get jwt after index 7 of header)
@@ -63,8 +72,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType("application/json");
                     response.getWriter().write(
-                            convertObjectToJson(ApiResponse.builder().result("failed").message("JWT has been expired").build())
+                            convertObjectToJson(
+                                    ApiResponse.builder()
+                                            .result("failed")
+                                            .message("JWT has been expired")
+                                            .build()
+                            )
                     );
+
+                    loggingUtils.logHttpServletRequest(request);
+                    loggingUtils.logHttpServletResponse(
+                            request,
+                            response,
+                            ApiResponse.builder()
+                                    .result("failed")
+                                    .message("JWT has been expired")
+                                    .build()
+                    );
+
+                    return;
                 } else {
                     // get token info from jwt
                     tokenInfo = jwtUtils.getRefreshTokenInfoFromJwt(jwt);

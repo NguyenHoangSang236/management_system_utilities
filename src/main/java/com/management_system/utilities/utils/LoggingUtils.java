@@ -1,5 +1,6 @@
 package com.management_system.utilities.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.constant.ConstantValue;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -36,6 +38,55 @@ public class LoggingUtils {
                     .append("[PATH]: ").append(request.getRequestURI()).append("\n")
                     .append("[QUERIES]: ").append(request.getQueryString()).append("\n")
                     .append("[PAYLOAD]: ").append(body != null ? body.toString() : null).append("\n");
+
+            Enumeration<String> payloadNames = request.getHeaderNames();
+            while (payloadNames.hasMoreElements()) {
+                String key = payloadNames.nextElement();
+                String value = request.getHeader(key);
+                data.append("---").append(key).append(" : ").append(value).append("\n");
+            }
+
+            data.append("[HEADERS]: ").append("\n");
+
+            Enumeration<String> headerNames = request.getHeaderNames();
+            while (headerNames.hasMoreElements()) {
+                String key = headerNames.nextElement();
+                String value = request.getHeader(key);
+                data.append("---").append(key).append(" : ").append(value).append("\n");
+            }
+            data.append("------------------------END LOGGING REQUEST-----------------------------------\n\n");
+
+            log.info(data.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void logHttpServletRequest(HttpServletRequest request) {
+        try {
+            Object requestId = request.getAttribute(ConstantValue.REQUEST_ID);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss  dd-MM-yyyy");
+            Date requestTime = new Date();
+
+            StringBuilder payload = new StringBuilder();
+            String line;
+
+            try (BufferedReader reader = request.getReader()) {
+                while ((line = reader.readLine()) != null) {
+                    payload.append(line.trim());
+                }
+            }
+
+            StringBuilder data = new StringBuilder();
+            data.append("\n\n------------------------LOGGING REQUEST-----------------------------------\n")
+                    .append("[REQUEST-ID]: ").append(requestId).append("\n")
+                    .append("[TIME]: ").append(simpleDateFormat.format(requestTime)).append("\n")
+                    .append("[METHOD]: ").append(request.getMethod()).append("\n")
+                    .append("[PATH]: ").append(request.getRequestURI()).append("\n")
+                    .append("[QUERIES]: ").append(request.getQueryString()).append("\n")
+                    .append("[PAYLOAD]: ").append(payload).append("\n");
 
             Enumeration<String> payloadNames = request.getHeaderNames();
             while (payloadNames.hasMoreElements()) {

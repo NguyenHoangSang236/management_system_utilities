@@ -2,7 +2,6 @@ package com.management_system.utilities.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.management_system.utilities.config.CustomUrlFilter;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class WebSecurityConfig {
     final JwtAuthenticationFilter jwtAuthenticationFilter;
     final UserDetailsService userDetailsService;
-    final CustomUrlFilter customUrlFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

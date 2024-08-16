@@ -106,13 +106,19 @@ public class JwtUtils {
 
 
     public TokenInfo getRefreshTokenInfoFromJwt(String jwt) {
-        Claims claims = getAllClaimsFromJwt(jwt);
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> claimMap = mapper.convertValue(claims, Map.class);
-        claimMap.remove("iat");
-        claimMap.remove("exp");
+        try {
+            Claims claims = getAllClaimsFromJwt(jwt);
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> claimMap = mapper.convertValue(claims, Map.class);
+            claimMap.remove("iat");
+            claimMap.remove("exp");
 
-        return mapper.convertValue(claimMap, TokenInfo.class);
+            return mapper.convertValue(claimMap, TokenInfo.class);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
@@ -133,9 +139,13 @@ public class JwtUtils {
 
 
     public String getRefreshTokenFromRequest(HttpServletRequest request) {
-        String token = request.getHeader("RefreshToken");
-
-        return token;
+        try {
+            return request.getHeader("RefreshToken");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

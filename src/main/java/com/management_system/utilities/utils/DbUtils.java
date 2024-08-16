@@ -34,9 +34,9 @@ public class DbUtils {
 
     final ValueParsingUtils valueParsingUtils;
 
-    /*
-     for id is not default "_id" and is not in the request body
-     use for document which DOES NOT NEED version management fields
+    /**
+     * for id is not default "_id" and is not in the request body
+     * use for document which DOES NOT NEED version management fields
      */
     public void updateSpecificFields(String idKey, String idVal, Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
         Object obj = mongoTemplate.findById(idVal, recordClass);
@@ -59,9 +59,9 @@ public class DbUtils {
     }
 
 
-    /*
-     for id is not default "_id" and is not in the request body
-     use for document which DOES NOT NEED version management fields
+    /**
+     * for id is not default "_id" and is not in the request body
+     * use for document which DOES NOT NEED version management fields
      */
     public void updateSpecificFields(Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
         if (fieldsToUpdate.get("id") == null) {
@@ -89,8 +89,8 @@ public class DbUtils {
     }
 
 
-    /*
-    filter data with pagination
+    /**
+     * filter data with pagination
      */
     public <T extends FilterOption, U> List<U> filterData(FilterRequest request, Class<U> tartgetClass) {
         Criteria criteria = new Criteria();
@@ -149,9 +149,9 @@ public class DbUtils {
     }
 
 
-    /*
-    use for merging data from request to the mongoDB entity
-    use for documents which need version management fields
+    /**
+     * use for merging data from request to the mongoDB entity
+     * use for documents which need version management fields
      */
     public <T extends MongoDbEntity> T mergeMongoEntityFromRequest(T mongoEntity, Object req) {
         try {
