@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.core.filter.FilterOption;
+import com.management_system.utilities.entities.api.request.ApiRequest;
 import com.management_system.utilities.entities.api.request.FilterRequest;
 import com.management_system.utilities.entities.api.request.FilterSort;
 import com.management_system.utilities.entities.api.request.Pagination;
@@ -153,7 +154,7 @@ public class DbUtils {
      * use for merging data from request to the mongoDB entity
      * use for documents which need version management fields
      */
-    public <T extends MongoDbEntity> T mergeMongoEntityFromRequest(T mongoEntity, Object req) {
+    public <T extends MongoDbEntity, R extends ApiRequest> T mergeMongoEntityFromRequest(T mongoEntity, R req) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

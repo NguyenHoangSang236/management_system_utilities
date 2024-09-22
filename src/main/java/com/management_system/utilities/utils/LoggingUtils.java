@@ -1,7 +1,9 @@
 package com.management_system.utilities.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.constant.ConstantValue;
+import com.management_system.utilities.entities.api.request.ApiRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import java.io.BufferedReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -29,6 +32,15 @@ public class LoggingUtils {
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss  dd-MM-yyyy");
             Date requestTime = new Date();
+            String bodyJsonString;
+
+            if (body instanceof List<?> apiRequests) {
+                bodyJsonString = convertListApiRequestToString((List<? extends ApiRequest>) apiRequests);
+            }
+            else if(body instanceof ApiRequest apiRequest) {
+                bodyJsonString = convertApiRequestToString(apiRequest);
+            }
+            else bodyJsonString = body.toString();
 
             StringBuilder data = new StringBuilder();
             data.append("\n\n------------------------LOGGING REQUEST-----------------------------------\n")
@@ -37,7 +49,7 @@ public class LoggingUtils {
                     .append("[METHOD]: ").append(request.getMethod()).append("\n")
                     .append("[PATH]: ").append(request.getRequestURI()).append("\n")
                     .append("[QUERIES]: ").append(request.getQueryString()).append("\n")
-                    .append("[PAYLOAD]: ").append(body != null ? body.toString() : null).append("\n");
+                    .append("[PAYLOAD]: ").append(bodyJsonString).append("\n");
 
             Enumeration<String> payloadNames = request.getHeaderNames();
             while (payloadNames.hasMoreElements()) {
@@ -160,5 +172,17 @@ public class LoggingUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String convertListApiRequestToString(List<? extends ApiRequest> requests) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        return objectMapper.writeValueAsString(requests);
+    }
+
+    private String convertApiRequestToString(ApiRequest request) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        return objectMapper.writeValueAsString(request);
     }
 }

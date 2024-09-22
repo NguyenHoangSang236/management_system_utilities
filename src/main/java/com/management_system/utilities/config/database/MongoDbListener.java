@@ -20,7 +20,13 @@ public class MongoDbListener extends AbstractMongoEventListener<MongoDbEntity> {
 
 
     private void updateMongoDbEntity(MongoDbEntity entity) {
-        entity.setLastUpdateDate(new Date());
+        Date currentDate = new Date();
+
+        entity.setLastUpdateDate(currentDate);
+
+        if(entity.getCreationDate() == null) {
+            entity.setCreationDate(currentDate);
+        }
 
         String userName = "Anonymous";
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

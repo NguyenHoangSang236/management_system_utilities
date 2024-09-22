@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FilterRequest<T extends FilterOption> implements Serializable {
+public class FilterRequest<T extends FilterOption> extends ApiRequest implements Serializable {
     @JsonProperty("filter_options")
     T filterOption;
 
