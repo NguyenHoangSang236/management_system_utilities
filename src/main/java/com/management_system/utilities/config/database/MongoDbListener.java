@@ -24,7 +24,7 @@ public class MongoDbListener extends AbstractMongoEventListener<MongoDbEntity> {
 
         entity.setLastUpdateDate(currentDate);
 
-        if(entity.getCreationDate() == null) {
+        if (entity.getCreationDate() == null) {
             entity.setCreationDate(currentDate);
         }
 

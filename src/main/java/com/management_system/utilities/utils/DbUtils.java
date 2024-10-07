@@ -12,6 +12,7 @@ import com.management_system.utilities.entities.database.MongoDbEntity;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
 import com.management_system.utilities.entities.exceptions.IdNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class DbUtils {
@@ -158,23 +160,31 @@ public class DbUtils {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            // convert request to Map
             Map<String, Object> reqMap = objectMapper.convertValue(req, Map.class);
 
             Class<? extends MongoDbEntity> mongoEntityClass = mongoEntity.getClass();
 
             for (Map.Entry<String, Object> entry : reqMap.entrySet()) {
-                Field field = mongoEntityClass.getDeclaredField(valueParsingUtils.fromSnakeCaseToCamel(entry.getKey()));
-                field.setAccessible(true);
+                try {
+                    Field field = mongoEntityClass.getDeclaredField(valueParsingUtils.fromSnakeCaseToCamel(entry.getKey()));
 
-                Object value = entry.getValue();
+                    field.setAccessible(true);
 
-                if (field.getType().isEnum()) {
-                    @SuppressWarnings("rawtypes")
-                    Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
-                    value = Enum.valueOf(enumType, value.toString());
+                    Object value = entry.getValue();
+
+                    if (field.getType().isEnum()) {
+                        @SuppressWarnings("rawtypes")
+                        Class<? extends Enum> enumType = (Class<? extends Enum>) field.getType();
+                        value = Enum.valueOf(enumType, value.toString());
+                    }
+
+                    field.set(mongoEntity, value);
+                } catch (NoSuchFieldException e) {
+                    log.error(e.getMessage());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-
-                field.set(mongoEntity, value);
             }
         } catch (Exception e) {
             e.printStackTrace();

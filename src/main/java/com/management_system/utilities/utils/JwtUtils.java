@@ -114,8 +114,7 @@ public class JwtUtils {
             claimMap.remove("exp");
 
             return mapper.convertValue(claimMap, TokenInfo.class);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -141,8 +140,7 @@ public class JwtUtils {
     public String getRefreshTokenFromRequest(HttpServletRequest request) {
         try {
             return request.getHeader("RefreshToken");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

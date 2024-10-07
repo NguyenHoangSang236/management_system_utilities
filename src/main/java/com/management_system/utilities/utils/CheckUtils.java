@@ -40,4 +40,11 @@ public class CheckUtils {
                 .matcher(content)
                 .matches();
     }
+
+
+    // check if phone's format is valid with VN format
+    // TODO: Upgrade it for all countries' format
+    public boolean isValidPhoneNumber(String phone) {
+        return (phone.length() == 10 && phone.indexOf("0") == 0) || (phone.length() == 12 && phone.indexOf("+84") == 0);
+    }
 }

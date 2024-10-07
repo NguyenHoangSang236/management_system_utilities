@@ -1,5 +1,6 @@
 package com.management_system.utilities.config.exception_handler;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.stream.Collectors;
@@ -38,6 +40,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.printStackTrace();
         return new ResponseEntity<>(ApiResponse.builder()
                 .result("failed")
+                .content("AuthenticationException")
                 .message(ex.getMessage())
                 .status(HttpStatus.UNAUTHORIZED)
                 .build(),
@@ -52,6 +55,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result("failed")
+                        .content("BadCredentialsException")
                         .message(ex.getMessage())
                         .status(HttpStatus.UNAUTHORIZED)
                         .build(),
@@ -66,6 +70,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result("failed")
+                        .content("AccessDeniedException")
                         .message(ex.getMessage())
                         .status(HttpStatus.FORBIDDEN)
                         .build(),
@@ -80,6 +85,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result("failed")
+                        .content("FirebaseMessagingException")
                         .message(ex.getMessage())
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .build(),
@@ -93,6 +99,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result("failed")
+                        .content("DataNotFoundException")
                         .message(ex.getMessage())
                         .status(HttpStatus.NO_CONTENT)
                         .build(),
@@ -106,6 +113,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result("failed")
+                        .content("IdNotFoundException")
                         .message(ex.getMessage())
                         .status(HttpStatus.BAD_REQUEST)
                         .build(),
@@ -146,6 +154,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             return new ResponseEntity<>(
                     ApiResponse.builder()
                             .result("failed")
+                            .content("DuplicateKeyException")
                             .message(ex.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
                             .build(),
@@ -165,6 +174,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result("failed")
+                        .content("ConstraintViolationException")
                         .message(errorMessage)
                         .status(HttpStatus.BAD_REQUEST)
                         .build(),
@@ -179,6 +189,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result("failed")
+                        .content("ExpiredJwtException")
                         .message(ex.getMessage())
                         .status(HttpStatus.UNAUTHORIZED)
                         .build(),
@@ -187,19 +198,57 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ExceptionHandler(value = {InvalidFormatException.class})
+    ResponseEntity<ApiResponse> handleInvalidFormatException(InvalidFormatException ex) {
+        ex.printStackTrace();
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result("failed")
+                        .content("InvalidFormatException")
+                        .message("JSON parse error, there must be some variable does not exist or invalid")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ResponseBody
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         StringBuilder errorMessage = new StringBuilder("Validation failed for arguments: ");
+
         ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessageForField = error.getDefaultMessage();
-            errorMessage.append(String.format("Field '%s': %s; ", fieldName, errorMessageForField));
+            if (error instanceof FieldError) {
+                String fieldName = ((FieldError) error).getField();
+                String errorMessageForField = error.getDefaultMessage();
+                errorMessage.append(String.format("Field '%s': %s; ", fieldName, errorMessageForField));
+            }
         });
-        ex.printStackTrace();
 
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result("failed")
+                        .content("MethodArgumentNotValidException")
+                        .message(errorMessage.toString())
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build(),
+                headers,
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ResponseBody
+    @Override
+    protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        StringBuilder errorMessage = new StringBuilder("Validation failed for arguments: ");
+        ex.getAllErrors().forEach(error -> {
+            errorMessage.append(error.getDefaultMessage()).append(", ");
+        });
+
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result("failed")
+                        .content("MethodValidationException")
                         .message(errorMessage.toString())
                         .status(HttpStatus.BAD_REQUEST)
                         .build(),
@@ -216,6 +265,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result("failed")
+                        .content("ServletRequestBindingException")
                         .message(ex.getMessage())
                         .status(HttpStatus.BAD_REQUEST)
                         .build(),
@@ -227,24 +277,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ApiResponse response = ApiResponse.builder()
                 .result("failed")
+                .content("Exception - " + ex.getCause().getClass().getSimpleName())
                 .message(ex.getMessage())
                 .status(HttpStatus.valueOf(status.value()))
                 .build();
 
-        return new ResponseEntity<>(response, headers, HttpStatus.valueOf(status.value()));
-    }
-
-    @ResponseBody
-    @ExceptionHandler(value = {Exception.class})
-    ResponseEntity<ApiResponse> handleException(Exception ex) {
         ex.printStackTrace();
-        return new ResponseEntity<>(
-                ApiResponse.builder()
-                        .result("failed")
-                        .message(ex.getMessage())
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .build(),
-                HttpStatus.INTERNAL_SERVER_ERROR
-        );
+
+        return new ResponseEntity<>(response, headers, HttpStatus.valueOf(status.value()));
     }
 }

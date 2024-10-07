@@ -36,11 +36,9 @@ public class LoggingUtils {
 
             if (body instanceof List<?> apiRequests) {
                 bodyJsonString = convertListApiRequestToString((List<? extends ApiRequest>) apiRequests);
-            }
-            else if(body instanceof ApiRequest apiRequest) {
+            } else if (body instanceof ApiRequest apiRequest) {
                 bodyJsonString = convertApiRequestToString(apiRequest);
-            }
-            else bodyJsonString = body.toString();
+            } else bodyJsonString = body.toString();
 
             StringBuilder data = new StringBuilder();
             data.append("\n\n------------------------LOGGING REQUEST-----------------------------------\n")
