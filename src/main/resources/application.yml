@@ -11,14 +11,14 @@ spring:
       password: hoangsang236
       authentication-database: admin
 
-server:
-  port: 1234
-  host: localhost
-  ssl:
-    key-store: keystore.p12
-    key-store-password: hoangsang236
-    keyStoreType: PKCS12
-    keyAlias: tomcat
+#server:
+#  port: 1234
+#  host: localhost
+#  ssl:
+#    key-store: keystore.p12
+#    key-store-password: hoangsang236
+#    keyStoreType: PKCS12
+#    keyAlias: tomcat
 
 logging:
   level:

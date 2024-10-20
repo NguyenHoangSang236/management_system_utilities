@@ -1,8 +1,8 @@
 package com.management_system.utilities.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.management_system.utilities.config.meta_data.CredentialsKeyName;
 import com.management_system.utilities.constant.ConstantValue;
-import com.management_system.utilities.constant.enumuration.CredentialEnum;
 import com.management_system.utilities.constant.enumuration.TokenType;
 import com.management_system.utilities.entities.database.TokenInfo;
 import com.management_system.utilities.repository.RefreshTokenRepository;
@@ -177,7 +177,7 @@ public class JwtUtils {
 
 
     public Key getSigningKey() {
-        String secretSigningKey = credentialsUtils.getCredentials(CredentialEnum.SECRET_SIGNING_KEY.name());
+        String secretSigningKey = credentialsUtils.getCredentials(CredentialsKeyName.SECRET_SIGNING_KEY);
         byte[] keyBytes = Decoders.BASE64.decode(secretSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }

@@ -6,7 +6,7 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import com.management_system.utilities.constant.enumuration.CredentialEnum;
+import com.management_system.utilities.config.meta_data.CredentialsKeyName;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,10 +25,10 @@ public class FirebaseUtils {
     final CredentialsUtils credentialsUtils;
 
     private String getUploadFileUrl(File file, String fileName) throws IOException {
-        String firebaseStorageBucketName = credentialsUtils.getCredentials(CredentialEnum.FIREBASE_STORAGE_BUCKET_NAME.name());
+        String firebaseStorageBucketName = credentialsUtils.getCredentials(CredentialsKeyName.FIREBASE_STORAGE_BUCKET_NAME);
         BlobId blobId = BlobId.of(firebaseStorageBucketName, fileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
-        InputStream inputStream = FirebaseUtils.class.getClassLoader().getResourceAsStream(credentialsUtils.getCredentials(CredentialEnum.FIREBASE_PRIVATE_KEY_FILE_PATH.name()));
+        InputStream inputStream = FirebaseUtils.class.getClassLoader().getResourceAsStream(credentialsUtils.getCredentials(CredentialsKeyName.FIREBASE_PRIVATE_KEY_FILE_PATH));
         Credentials credentials = GoogleCredentials.fromStream(inputStream);
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
