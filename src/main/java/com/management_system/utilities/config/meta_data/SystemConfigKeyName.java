@@ -1,13 +1,18 @@
 package com.management_system.utilities.config.meta_data;
 
-public enum CredentialsKeyName {
+public enum SystemConfigKeyName {
     SECRET_SIGNING_KEY,
     FIREBASE_PRIVATE_KEY_FILE_PATH,
     FIREBASE_STORAGE_BUCKET_NAME,
     SSL_KEYSTORE_PASSWORD,
     SSL_KEYSTORE_TYPE,
     SSL_KEYSTORE_ALIAS,
+    SSL_FILE_DIRECTORY,
     SERVER_PORT,
+    EUREKA_SERVER_PORT,
+    RESOURCE_SERVICE_SERVER_PORT,
+    AUTHENTICATION_SERVICE_SERVER_PORT,
+    REDIS_SERVICE_SERVER_PORT,
 
     // FOR TEST
     TEST_KEY

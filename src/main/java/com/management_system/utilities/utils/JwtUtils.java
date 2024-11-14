@@ -1,7 +1,7 @@
 package com.management_system.utilities.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.management_system.utilities.config.meta_data.CredentialsKeyName;
+import com.management_system.utilities.config.meta_data.SystemConfigKeyName;
 import com.management_system.utilities.constant.ConstantValue;
 import com.management_system.utilities.constant.enumuration.TokenType;
 import com.management_system.utilities.entities.database.TokenInfo;
@@ -30,7 +30,7 @@ public class JwtUtils {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORIZATION_PREFIX = "Bearer ";
     final RefreshTokenRepository refreshTokenRepo;
-    final CredentialsUtils credentialsUtils;
+    final SystemConfigEnvUtils credentialsUtils;
     final DbUtils dbUtils;
 
     public TokenInfo getTokenInfoFromHttpRequest(HttpServletRequest request) {
@@ -177,7 +177,7 @@ public class JwtUtils {
 
 
     public Key getSigningKey() {
-        String secretSigningKey = credentialsUtils.getCredentials(CredentialsKeyName.SECRET_SIGNING_KEY);
+        String secretSigningKey = credentialsUtils.getCredentials(SystemConfigKeyName.SECRET_SIGNING_KEY);
         byte[] keyBytes = Decoders.BASE64.decode(secretSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }

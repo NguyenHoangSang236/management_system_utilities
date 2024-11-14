@@ -34,12 +34,15 @@ import java.util.Map;
 @Service
 public class DbUtils {
     final MongoTemplate mongoTemplate;
-
     final ValueParsingUtils valueParsingUtils;
 
+
     /**
-     * for id is not default "_id" and is not in the request body
-     * use for document which DOES NOT NEED version management fields
+     * Use for document which DOES NOT NEED version control fields, id is not the default "_id" and is not in the request body
+     * @param idKey the id key name
+     * @param idVal the id key value
+     * @param fieldsToUpdate a Map of data we want to update
+     * @param recordClass record class we want to get from database, modify its fields and save back to the database
      */
     public void updateSpecificFields(String idKey, String idVal, Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
         Object obj = mongoTemplate.findById(idVal, recordClass);
@@ -56,15 +59,16 @@ public class DbUtils {
             update.set(key, fieldsToUpdate.get(key));
         }
 
-        updateMongoDbFields(update);
+        updateVersionControlFields(update);
 
         mongoTemplate.updateFirst(query, update, recordClass);
     }
 
 
     /**
-     * for id is not default "_id" and is not in the request body
-     * use for document which DOES NOT NEED version management fields
+     * Use for document which DOES NOT NEED version control fields
+     * @param fieldsToUpdate a Map of data we want to update
+     * @param recordClass record class we want to get from database, modify its fields and save back to the database
      */
     public void updateSpecificFields(Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
         if (fieldsToUpdate.get("id") == null) {
@@ -86,16 +90,21 @@ public class DbUtils {
             update.set(key, fieldsToUpdate.get(key));
         }
 
-        updateMongoDbFields(update);
+        updateVersionControlFields(update);
 
         mongoTemplate.updateFirst(query, update, recordClass);
     }
 
 
     /**
-     * filter data with pagination
+     * Filter data with pagination
+     * @param request filter request
+     * @param targetClass class type of results objects
+     * @return a list of result objects after querying the database using data from request
+     * @param <T> class extending FilterOption
+     * @param <U> class type of result objects
      */
-    public <T extends FilterOption, U> List<U> filterData(FilterRequest request, Class<U> tartgetClass) {
+    public <T extends FilterOption, U> List<U> filterData(FilterRequest request, Class<U> targetClass) {
         Criteria criteria = new Criteria();
         Map<String, Object> optionMap = request.getFilterOption().toMap();
         Pagination pagination = request.getPagination();
@@ -124,8 +133,7 @@ public class DbUtils {
             }
         }
 
-        Query query = new Query()
-                .addCriteria(criteria);
+        Query query = new Query().addCriteria(criteria);
 
         if (pagination != null && pagination.getPage() > 0 && pagination.getSize() > 0) {
             query.with(PageRequest.of(pagination.getPage() - 1, pagination.getSize()));
@@ -137,29 +145,23 @@ public class DbUtils {
             query.with(sort);
         }
 
-        return mongoTemplate.find(query, tartgetClass);
-    }
-
-
-    public <T> T getDataById(String id, Class<T> tartgetClass) {
-        Criteria criteria = new Criteria();
-        criteria.and("_id").is(id);
-        Query query = new Query().addCriteria(criteria);
-
-        List<T> resList = mongoTemplate.find(query, tartgetClass);
-
-        return resList.isEmpty() ? null : resList.get(0);
+        return mongoTemplate.find(query, targetClass);
     }
 
 
     /**
-     * use for merging data from request to the mongoDB entity
-     * use for documents which need version management fields
+     * Use for merging data from request to the MongoDbEntity and documents which need version management fields
+     * @param mongoEntity the entity we want to merge from a request
+     * @param req the ApiRequest we want to merge
+     * @return a MongoDbEntity after merging data from request
+     * @param <T> class extending MongoDbEntity
+     * @param <R> class extending ApiRequest
      */
     public <T extends MongoDbEntity, R extends ApiRequest> T mergeMongoEntityFromRequest(T mongoEntity, R req) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
             // convert request to Map
             Map<String, Object> reqMap = objectMapper.convertValue(req, Map.class);
 
@@ -194,8 +196,12 @@ public class DbUtils {
     }
 
 
-    /*
-    use for merging data from request to an entity
+    /**
+     * Use for merging data from request to an entity
+     * @param object the object we want to merge from a request
+     * @param request the request we want to merge
+     * @return object after merging from request
+     * @param <T> the class type you want to merge from request
      */
     public <T> T mergeObjectFromRequest(T object, Object request) {
         try {
@@ -228,7 +234,11 @@ public class DbUtils {
     }
 
 
-    private void updateMongoDbFields(Update update) {
+    /**
+     * Update specific fields of a record for versions control
+     * @param update includes fields and their values
+     */
+    private void updateVersionControlFields(Update update) {
         update.inc("version", 1);
         update.set("last_update_date", new Date());
 
@@ -243,8 +253,10 @@ public class DbUtils {
     }
 
 
-    /*
-    get Sort from request's FilterSort list
+    /**
+     * Get Sort from request's FilterSort list
+     * @param sorts list of FilterSort
+     * @return Sort data from the given FilterSort list
      */
     private Sort getSortFromRequestFilterSort(List<FilterSort> sorts) {
         if (sorts != null && !sorts.isEmpty()) {
