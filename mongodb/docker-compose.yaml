@@ -12,8 +12,8 @@ services:
       MONGO_INITDB_DATABASE: management_system
     volumes:
       - mongo_data:/data/db
+      - /home/mr/JAVA/management_system_project/ultilities/database/management_system:/data/backup
 
 volumes:
   mongo_data:
     driver: local
-

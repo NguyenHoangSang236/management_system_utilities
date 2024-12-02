@@ -277,7 +277,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ApiResponse response = ApiResponse.builder()
                 .result("failed")
-                .content("Exception - " + ex.getCause().getClass().getSimpleName())
+                .content("Exception - " + ex.getClass().getSimpleName())
                 .message(ex.getMessage())
                 .status(HttpStatus.valueOf(status.value()))
                 .build();
