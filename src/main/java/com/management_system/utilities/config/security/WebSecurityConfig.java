@@ -3,7 +3,9 @@ package com.management_system.utilities.config.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.management_system.utilities.config.logging.RequestGetLogger;
+import com.management_system.utilities.config.meta_data.SystemConfigKeyName;
 import com.management_system.utilities.entities.api.response.ApiResponse;
+import com.management_system.utilities.utils.SystemConfigEnvUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -37,10 +37,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     final JwtAuthenticationFilter jwtAuthenticationFilter;
-    final UserDetailsService userDetailsService;
+    final SystemConfigEnvUtils systemConfigEnvUtils;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        String[] patterns = systemConfigEnvUtils.getCredentials(SystemConfigKeyName.SECURITY_IGNORED_REQUEST_MATCHERS).split(",");
+
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
@@ -48,11 +50,12 @@ public class WebSecurityConfig {
 //                .formLogin(AbstractHttpConfigurer::disable)
 //                .httpBasic(AbstractHttpConfigurer::disable)
 //                .logout(LogoutConfigurer::disable)
-//                .authorizeHttpRequests(
-//                        (request) -> request
-//                                .requestMatchers("/authen/**").authenticated()
-//                                .anyRequest().permitAll()
-//                )
+                .authorizeHttpRequests(
+                        (request) -> request
+                                .requestMatchers(patterns)
+                                .authenticated()
+                                .anyRequest().permitAll()
+                )
                 .sessionManagement(
                         sessionManagement -> {
                             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -83,10 +86,11 @@ public class WebSecurityConfig {
     }
 
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/unauthen/**", "/eureka/**", "/error");
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        String[] patterns = systemConfigEnvUtils.getCredentials(SystemConfigKeyName.SECURITY_IGNORED_REQUEST_MATCHERS).split(",");
+//        return (web) -> web.ignoring().requestMatchers(patterns);
+//    }
 
 
     @Bean

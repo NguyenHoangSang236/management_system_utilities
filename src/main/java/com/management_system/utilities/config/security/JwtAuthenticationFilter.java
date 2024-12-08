@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("Current Request ID: {}", request.getAttribute(ConstantValue.REQUEST_ID).toString());
 
             // if header is not null and starts with word 'Bearer' -> proceed filter
-            if (authHeader != null && authHeader.startsWith("Bearer")) {
+            if (authHeader != null && authHeader.startsWith("Bearer") && request.getRequestURI().contains("/authen/")) {
                 // get jwt from header ('Bearer' length is 7 => get jwt after index 7 of header)
                 jwt = jwtUtils.getJwtFromRequest(request);
                 logger.info("Client jwt: " + jwt);
@@ -116,15 +116,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     convertObjectToJson(ApiResponse.builder().result("failed").message(e.getMessage()).build())
             );
         }
-//        finally {
-//            SecurityUtils.clearSecurityContext();
-//        }
-    }
-
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return !request.getRequestURI().contains("/authen");
     }
 
 
