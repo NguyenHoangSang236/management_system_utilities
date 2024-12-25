@@ -25,7 +25,12 @@ import java.util.Map;
 public class LoggingUtils {
     final ValueParsingUtils valueParsingUtils;
 
-
+    /**
+     * Log information of Http Servlet request
+     *
+     * @param request The Http Servlet request
+     * @param body    The request body
+     */
     public void logHttpServletRequest(HttpServletRequest request, Object body) {
         try {
             Object requestId = request.getAttribute(ConstantValue.REQUEST_ID);
@@ -34,7 +39,9 @@ public class LoggingUtils {
             Date requestTime = new Date();
             String bodyJsonString;
 
-            if (body instanceof List<?> apiRequests) {
+            if (body == null) {
+                bodyJsonString = null;
+            } else if (body instanceof List<?> apiRequests) {
                 bodyJsonString = convertListApiRequestToString((List<? extends ApiRequest>) apiRequests);
             } else if (body instanceof ApiRequest apiRequest) {
                 bodyJsonString = convertApiRequestToString(apiRequest);
@@ -45,7 +52,7 @@ public class LoggingUtils {
                     .append("[REQUEST-ID]: ").append(requestId).append("\n")
                     .append("[TIME]: ").append(simpleDateFormat.format(requestTime)).append("\n")
                     .append("[METHOD]: ").append(request.getMethod()).append("\n")
-                    .append("[PATH]: ").append(request.getRequestURI()).append("\n")
+                    .append("[URL]: ").append(request.getRequestURI()).append("\n")
                     .append("[QUERIES]: ").append(request.getQueryString()).append("\n")
                     .append("[PAYLOAD]: ").append(bodyJsonString).append("\n");
 
@@ -73,6 +80,11 @@ public class LoggingUtils {
     }
 
 
+    /**
+     * Log information of Http Servlet request
+     *
+     * @param request The Http Servlet Request
+     */
     public void logHttpServletRequest(HttpServletRequest request) {
         try {
             Object requestId = request.getAttribute(ConstantValue.REQUEST_ID);
@@ -94,7 +106,7 @@ public class LoggingUtils {
                     .append("[REQUEST-ID]: ").append(requestId).append("\n")
                     .append("[TIME]: ").append(simpleDateFormat.format(requestTime)).append("\n")
                     .append("[METHOD]: ").append(request.getMethod()).append("\n")
-                    .append("[PATH]: ").append(request.getRequestURI()).append("\n")
+                    .append("[URL]: ").append(request.getRequestURI()).append("\n")
                     .append("[QUERIES]: ").append(request.getQueryString()).append("\n")
                     .append("[PAYLOAD]: ").append(payload).append("\n");
 
@@ -121,14 +133,22 @@ public class LoggingUtils {
         }
     }
 
-
+    /**
+     * Log information of Http Servlet response
+     *
+     * @param request  The Http Servlet request
+     * @param response The Http Servlet response
+     * @param body     The response body
+     */
     public void logHttpServletResponse(HttpServletRequest request, HttpServletResponse response, Object body) {
         try {
             Object requestId = request.getAttribute(ConstantValue.REQUEST_ID);
+            int statusCode = response.getStatus();
 
             String data = "\n\n------------------------LOGGING RESPONSE-----------------------------------\n" +
                     "[REQUEST-ID]: " + requestId.toString() + "\n" +
                     "[URL]: " + request.getRequestURL() + "\n" +
+                    "[STATUS CODE]: " + statusCode + "\n" +
                     "[BODY RESPONSE]: " + valueParsingUtils.parseObjectToString(body) +
                     "\n------------------------END LOGGING RESPONSE-----------------------------------\n";
 
@@ -138,8 +158,15 @@ public class LoggingUtils {
         }
     }
 
-
-    public void logThirdPartyRequestAndResponse(String url, HttpHeaders headers, Map<String, Object> body, ResponseEntity response) {
+    /**
+     * Log information of third party request and response
+     *
+     * @param url         URL of the third party API
+     * @param headers     Request header information
+     * @param response    The response of the third party API
+     * @param requestBody The request body
+     */
+    public void logThirdPartyRequestAndResponse(String url, HttpHeaders headers, Map<String, Object> requestBody, ResponseEntity response) {
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss  dd-MM-yyyy");
             Date requestTime = new Date();
@@ -147,26 +174,28 @@ public class LoggingUtils {
             StringBuilder data = new StringBuilder();
             data.append("\n\n------------------------LOGGING THIRD-PARTY REQUEST-----------------------------------\n")
                     .append("[TIME]: ").append(simpleDateFormat.format(requestTime)).append("\n")
-                    .append("[METHOD]: ").append(body == null ? "GET" : "POST").append("\n")
-                    .append("[PATH]: ").append(url).append("\n")
-                    .append("[PAYLOAD]: ").append(body != null ? body.toString() : null).append("\n");
+                    .append("[METHOD]: ").append(requestBody == null ? "GET" : "POST").append("\n")
+                    .append("[URL]: ").append(url).append("\n")
+                    .append("[PAYLOAD]: ").append(requestBody != null ? requestBody.toString() : null).append("\n")
+                    .append("[HEADERS]: ").append("\n");
 
-            data.append("[HEADERS]: ").append("\n");
+            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                 data.append("---").append(entry.getKey()).append(" : ").append(entry.getValue()).append("\n");
+            }
 
-            headers.forEach((key, value) -> {
-                data.append("---").append(key).append(" : ").append(value).append("\n");
-            });
             data.append("------------------------END LOGGING THIRD-PARTY REQUEST-----------------------------------\n\n");
 
             log.info(data.toString());
 
-            Object requestId = response.getHeaders().get(ConstantValue.REQUEST_ID);
+            data = new StringBuilder();
 
-            String resData = "\n\n------------------------LOGGING THIRD-PARTY RESPONSE-----------------------------------\n" +
-                    "[BODY RESPONSE]: " + valueParsingUtils.parseObjectToString(response.getBody()) +
-                    "\n------------------------END LOGGING THIRD-PARTY RESPONSE-----------------------------------\n";
+            data.append("\n\n------------------------LOGGING THIRD-PARTY RESPONSE-----------------------------------\n")
+                    .append("[URL]: ").append(url).append("\n")
+                    .append("[BODY RESPONSE]: ").append(valueParsingUtils.parseObjectToString(response.getBody())).append("\n")
+                    .append("[STATUS CODE]: ").append(response.getStatusCode()).append("\n")
+                    .append("------------------------END LOGGING THIRD-PARTY RESPONSE-----------------------------------\n");
 
-            log.info(resData);
+            log.info(data.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }

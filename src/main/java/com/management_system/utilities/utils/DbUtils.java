@@ -39,10 +39,11 @@ public class DbUtils {
 
     /**
      * Use for document which DOES NOT NEED version control fields, id is not the default "_id" and is not in the request body
-     * @param idKey the id key name
-     * @param idVal the id key value
+     *
+     * @param idKey          the id key name
+     * @param idVal          the id key value
      * @param fieldsToUpdate a Map of data we want to update
-     * @param recordClass record class we want to get from database, modify its fields and save back to the database
+     * @param recordClass    record class we want to get from database, modify its fields and save back to the database
      */
     public void updateSpecificFields(String idKey, String idVal, Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
         Object obj = mongoTemplate.findById(idVal, recordClass);
@@ -67,8 +68,9 @@ public class DbUtils {
 
     /**
      * Use for document which DOES NOT NEED version control fields
+     *
      * @param fieldsToUpdate a Map of data we want to update
-     * @param recordClass record class we want to get from database, modify its fields and save back to the database
+     * @param recordClass    record class we want to get from database, modify its fields and save back to the database
      */
     public void updateSpecificFields(Map<String, Object> fieldsToUpdate, Class<?> recordClass) {
         if (fieldsToUpdate.get("id") == null) {
@@ -98,11 +100,12 @@ public class DbUtils {
 
     /**
      * Filter data with pagination
-     * @param request filter request
+     *
+     * @param request     filter request
      * @param targetClass class type of results objects
+     * @param <T>         class extending FilterOption
+     * @param <U>         class type of result objects
      * @return a list of result objects after querying the database using data from request
-     * @param <T> class extending FilterOption
-     * @param <U> class type of result objects
      */
     public <T extends FilterOption, U> List<U> filterData(FilterRequest request, Class<U> targetClass) {
         Criteria criteria = new Criteria();
@@ -151,11 +154,12 @@ public class DbUtils {
 
     /**
      * Use for merging data from request to the MongoDbEntity and documents which need version management fields
+     *
      * @param mongoEntity the entity we want to merge from a request
-     * @param req the ApiRequest we want to merge
+     * @param req         the ApiRequest we want to merge
+     * @param <T>         class extending MongoDbEntity
+     * @param <R>         class extending ApiRequest
      * @return a MongoDbEntity after merging data from request
-     * @param <T> class extending MongoDbEntity
-     * @param <R> class extending ApiRequest
      */
     public <T extends MongoDbEntity, R extends ApiRequest> T mergeMongoEntityFromRequest(T mongoEntity, R req) {
         try {
@@ -198,10 +202,11 @@ public class DbUtils {
 
     /**
      * Use for merging data from request to an entity
-     * @param object the object we want to merge from a request
+     *
+     * @param object  the object we want to merge from a request
      * @param request the request we want to merge
+     * @param <T>     the class type you want to merge from request
      * @return object after merging from request
-     * @param <T> the class type you want to merge from request
      */
     public <T> T mergeObjectFromRequest(T object, Object request) {
         try {
@@ -236,6 +241,7 @@ public class DbUtils {
 
     /**
      * Update specific fields of a record for versions control
+     *
      * @param update includes fields and their values
      */
     private void updateVersionControlFields(Update update) {
@@ -255,6 +261,7 @@ public class DbUtils {
 
     /**
      * Get Sort from request's FilterSort list
+     *
      * @param sorts list of FilterSort
      * @return Sort data from the given FilterSort list
      */

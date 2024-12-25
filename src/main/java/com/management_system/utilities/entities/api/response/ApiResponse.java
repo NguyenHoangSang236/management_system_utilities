@@ -35,4 +35,16 @@ public class ApiResponse implements UseCase.OutputValue, Serializable {
         this.result = result;
         this.content = content;
     }
+
+    @Override
+    public String toString() {
+        return "ApiResponse{" +
+                "result='" + result + '\'' +
+                ", content=" + content +
+                ", message='" + message + '\'' +
+                ", jwt='" + jwt + '\'' +
+                ", refreshToken='" + refreshToken + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

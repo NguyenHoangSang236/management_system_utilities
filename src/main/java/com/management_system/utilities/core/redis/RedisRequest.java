@@ -1,7 +1,7 @@
 package com.management_system.utilities.core.redis;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.management_system.utilities.constant.enumuration.FilterType;
+import com.management_system.utilities.constant.enumuration.TableName;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
@@ -16,7 +16,7 @@ import java.util.Map;
 public class RedisRequest {
     @JsonProperty(value = "type")
     @Enumerated(EnumType.STRING)
-    FilterType type;
+    TableName type;
 
     Map<String, Object> data;
 }
