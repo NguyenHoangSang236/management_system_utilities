@@ -20,6 +20,10 @@ public abstract class CachingProcessHandler {
         this.dbEntity = dbEntity;
     }
 
+    public CachingProcessHandler(Context context) {
+        this.context = context;
+    }
+
     /**
      * Execute some logic for context within caching process
      *
