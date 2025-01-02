@@ -1,6 +1,8 @@
 package com.management_system.utilities.core.redis;
 
 import com.management_system.utilities.entities.database.MongoDbEntity;
+import com.management_system.utilities.entities.exceptions.DataNotFoundException;
+import com.management_system.utilities.entities.exceptions.InvalidDataException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +20,9 @@ public abstract class CachingProcessHandler {
         this.dbEntity = dbEntity;
     }
 
+    /**
+     * Execute some logic for context within caching process
+     *
+     */
     public abstract void process();
 }

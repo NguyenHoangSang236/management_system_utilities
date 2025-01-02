@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public abstract class MongoDbEntity {
+public abstract class MongoDbEntity extends DbEntity {
     @Version
     @Field(name = "version")
     Long version;
