@@ -25,6 +25,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = {AuthenticationException.class})
     ResponseEntity<ApiResponse> handleAuthenticationException(AuthenticationException ex) {
         ex.printStackTrace();
@@ -49,6 +51,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = {BadCredentialsException.class})
     ResponseEntity<ApiResponse> handleBadCredentialsException(BadCredentialsException ex) {
         ex.printStackTrace();
@@ -64,6 +67,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = {AccessDeniedException.class})
     ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException ex) {
         ex.printStackTrace();
@@ -79,6 +83,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {FirebaseMessagingException.class})
     ResponseEntity<ApiResponse> handleFirebaseMessagingException(FirebaseMessagingException ex) {
         ex.printStackTrace();
@@ -94,6 +99,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ExceptionHandler(value = {DataNotFoundException.class})
     ResponseEntity<ApiResponse> handleDataNotFoundException(DataNotFoundException ex) {
         return new ResponseEntity<>(
@@ -108,6 +114,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = {IdNotFoundException.class})
     ResponseEntity<ApiResponse> handleIdNotFoundException(IdNotFoundException ex) {
         return new ResponseEntity<>(
@@ -115,13 +122,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .result("failed")
                         .content("IdNotFoundException")
                         .message(ex.getMessage())
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.NOT_FOUND)
                         .build(),
-                HttpStatus.BAD_REQUEST
+                HttpStatus.NOT_FOUND
         );
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {DuplicateKeyException.class})
     ResponseEntity<ApiResponse> handleMongoWriteException(DuplicateKeyException ex) {
         if (ex.getCause() instanceof MongoWriteException mongoWriteEx) {
@@ -144,9 +152,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         ApiResponse.builder()
                                 .result("failed")
                                 .message(mongoWriteEx.getMessage())
-                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .status(HttpStatus.BAD_REQUEST)
                                 .build(),
-                        HttpStatus.INTERNAL_SERVER_ERROR
+                        HttpStatus.BAD_REQUEST
                 );
             }
 
@@ -164,6 +172,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         String errorMessage = ex.getConstraintViolations().stream()
@@ -183,6 +192,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = {ExpiredJwtException.class})
     ResponseEntity<ApiResponse> handleExpiredJwtException(ExpiredJwtException ex) {
         ex.printStackTrace();
@@ -198,6 +208,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {InvalidFormatException.class})
     ResponseEntity<ApiResponse> handleInvalidFormatException(InvalidFormatException ex) {
         ex.printStackTrace();
@@ -213,6 +224,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         StringBuilder errorMessage = new StringBuilder("Validation failed for arguments: ");
@@ -238,6 +250,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Override
     protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         StringBuilder errorMessage = new StringBuilder("Validation failed for arguments: ");
@@ -258,6 +271,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @Override
     protected ResponseEntity<Object> handleServletRequestBindingException(ServletRequestBindingException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ex.printStackTrace();

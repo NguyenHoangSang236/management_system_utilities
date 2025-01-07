@@ -32,7 +32,7 @@ public class SystemConfigEnvUtilsTest {
                 Arguments.of("RESOURCE_SERVICE_SERVER_PORT", "8082"),
                 Arguments.of("AUTHENTICATION_SERVICE_SERVER_PORT", "8081"),
                 Arguments.of("REDIS_SERVICE_SERVER_PORT", "8079"),
-                Arguments.of("SECURITY_IGNORED_REQUEST_MATCHERS", "/redis/unauthen/**, /resource/unauthen/**, /authentication/unauthen/**, /eureka/**, /error/**")
+                Arguments.of("SECURITY_IGNORED_REQUEST_MATCHERS", "/api/redis/unauthen/**, /api/resource/unauthen/**, /api/authentication/unauthen/**, /eureka/**, /error/**, /v1/**")
         );
     }
 
