@@ -2,9 +2,11 @@ package com.management_system.utilities.config.exception_handler;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.management_system.utilities.constant.enumuration.ResponseResult;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
 import com.management_system.utilities.entities.exceptions.IdNotFoundException;
+import com.management_system.utilities.entities.exceptions.InvalidFileExtensionException;
 import com.mongodb.MongoWriteException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolation;
@@ -41,7 +43,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ResponseEntity<ApiResponse> handleAuthenticationException(AuthenticationException ex) {
         ex.printStackTrace();
         return new ResponseEntity<>(ApiResponse.builder()
-                .result("failed")
+                .result(ResponseResult.failed.name())
                 .content("AuthenticationException")
                 .message(ex.getMessage())
                 .status(HttpStatus.UNAUTHORIZED)
@@ -57,7 +59,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.printStackTrace();
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("BadCredentialsException")
                         .message(ex.getMessage())
                         .status(HttpStatus.UNAUTHORIZED)
@@ -73,7 +75,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.printStackTrace();
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("AccessDeniedException")
                         .message(ex.getMessage())
                         .status(HttpStatus.FORBIDDEN)
@@ -89,7 +91,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.printStackTrace();
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("FirebaseMessagingException")
                         .message(ex.getMessage())
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -104,7 +106,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ResponseEntity<ApiResponse> handleDataNotFoundException(DataNotFoundException ex) {
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("DataNotFoundException")
                         .message(ex.getMessage())
                         .status(HttpStatus.NO_CONTENT)
@@ -119,7 +121,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ResponseEntity<ApiResponse> handleIdNotFoundException(IdNotFoundException ex) {
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("IdNotFoundException")
                         .message(ex.getMessage())
                         .status(HttpStatus.NOT_FOUND)
@@ -141,7 +143,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
                 return new ResponseEntity<>(
                         ApiResponse.builder()
-                                .result("failed")
+                                .result(ResponseResult.failed.name())
                                 .message("Duplicated data: " + jsonStr)
                                 .status(HttpStatus.BAD_REQUEST)
                                 .build(),
@@ -150,7 +152,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             } else {
                 return new ResponseEntity<>(
                         ApiResponse.builder()
-                                .result("failed")
+                                .result(ResponseResult.failed.name())
                                 .message(mongoWriteEx.getMessage())
                                 .status(HttpStatus.BAD_REQUEST)
                                 .build(),
@@ -161,7 +163,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         } else {
             return new ResponseEntity<>(
                     ApiResponse.builder()
-                            .result("failed")
+                            .result(ResponseResult.failed.name())
                             .content("DuplicateKeyException")
                             .message(ex.getMessage())
                             .status(HttpStatus.BAD_REQUEST)
@@ -182,7 +184,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("ConstraintViolationException")
                         .message(errorMessage)
                         .status(HttpStatus.BAD_REQUEST)
@@ -198,7 +200,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.printStackTrace();
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("ExpiredJwtException")
                         .message(ex.getMessage())
                         .status(HttpStatus.UNAUTHORIZED)
@@ -214,7 +216,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.printStackTrace();
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("InvalidFormatException")
                         .message("JSON parse error, there must be some variable does not exist or invalid")
                         .status(HttpStatus.BAD_REQUEST)
@@ -239,7 +241,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("MethodArgumentNotValidException")
                         .message(errorMessage.toString())
                         .status(HttpStatus.BAD_REQUEST)
@@ -260,7 +262,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("MethodValidationException")
                         .message(errorMessage.toString())
                         .status(HttpStatus.BAD_REQUEST)
@@ -278,7 +280,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(
                 ApiResponse.builder()
-                        .result("failed")
+                        .result(ResponseResult.failed.name())
                         .content("ServletRequestBindingException")
                         .message(ex.getMessage())
                         .status(HttpStatus.BAD_REQUEST)
@@ -287,10 +289,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<Object> handleInvalidFileExtensionException(InvalidFileExtensionException ex) {
+        ex.printStackTrace();
+
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result(ResponseResult.failed.name())
+                        .content("InvalidFileExtensionException")
+                        .message(ex.getMessage())
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ApiResponse response = ApiResponse.builder()
-                .result("failed")
+                .result(ResponseResult.failed.name())
                 .content("Exception - " + ex.getClass().getSimpleName())
                 .message(ex.getMessage())
                 .status(HttpStatus.valueOf(status.value()))

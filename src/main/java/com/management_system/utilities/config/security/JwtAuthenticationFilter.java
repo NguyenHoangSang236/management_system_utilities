@@ -3,6 +3,7 @@ package com.management_system.utilities.config.security;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.constant.ConstantValue;
+import com.management_system.utilities.constant.enumuration.ResponseResult;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import com.management_system.utilities.entities.database.TokenInfo;
 import com.management_system.utilities.utils.JwtUtils;
@@ -74,7 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     response.getWriter().write(
                             convertObjectToJson(
                                     ApiResponse.builder()
-                                            .result("failed")
+                                            .result(ResponseResult.failed.name())
                                             .message("JWT has been expired")
                                             .build()
                             )
@@ -85,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             request,
                             response,
                             ApiResponse.builder()
-                                    .result("failed")
+                                    .result(ResponseResult.failed.name())
                                     .message("JWT has been expired")
                                     .build()
                     );
@@ -113,7 +114,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setContentType("application/json");
             response.getWriter().write(
-                    convertObjectToJson(ApiResponse.builder().result("failed").message(e.getMessage()).build())
+                    convertObjectToJson(ApiResponse.builder().result(ResponseResult.failed.name()).message(e.getMessage()).build())
             );
         }
     }

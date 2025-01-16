@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.management_system.utilities.config.logging.RequestGetLogger;
 import com.management_system.utilities.config.meta_data.SystemConfigKeyName;
+import com.management_system.utilities.constant.enumuration.ResponseResult;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import com.management_system.utilities.utils.SystemConfigEnvUtils;
 import jakarta.servlet.http.HttpServletResponse;
@@ -69,7 +70,11 @@ public class WebSecurityConfig {
                             exception.authenticationEntryPoint(
                                     (request, response, authException) -> {
                                         if (authException != null) {
-                                            ApiResponse apiResponse = new ApiResponse("failed", authException.getMessage(), HttpStatus.UNAUTHORIZED);
+                                            ApiResponse apiResponse = new ApiResponse(
+                                                    ResponseResult.failed.name(),
+                                                    authException.getMessage(),
+                                                    HttpStatus.UNAUTHORIZED
+                                            );
 
                                             String jsonErrorResponse = new ObjectMapper().writeValueAsString(apiResponse);
 

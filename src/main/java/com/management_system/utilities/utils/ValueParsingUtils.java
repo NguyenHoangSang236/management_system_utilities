@@ -1,6 +1,7 @@
 package com.management_system.utilities.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.management_system.utilities.constant.enumuration.ResponseResult;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class ValueParsingUtils {
             return objectMapper.writeValueAsString(object);
         } catch (Exception e) {
             e.printStackTrace();
-            ApiResponse res = new ApiResponse("failed", "Error at JSON parsing", HttpStatus.INTERNAL_SERVER_ERROR);
+            ApiResponse res = new ApiResponse(ResponseResult.failed.name(), "Error at JSON parsing", HttpStatus.INTERNAL_SERVER_ERROR);
             return res.toString();
         }
     }
