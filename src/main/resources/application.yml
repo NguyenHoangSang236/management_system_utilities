@@ -10,6 +10,8 @@ spring:
       username: root
       password: hoangsang236
       authentication-database: admin
+  messages:
+    basename: ValidationMessages
 
 #server:
 #  port: 1234
