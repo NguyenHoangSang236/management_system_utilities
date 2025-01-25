@@ -3,6 +3,7 @@ package com.management_system.utilities.utils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.management_system.utilities.constant.ConstantValue;
 import com.management_system.utilities.core.filter.FilterOption;
 import com.management_system.utilities.entities.api.request.ApiRequest;
 import com.management_system.utilities.entities.api.request.FilterRequest;
@@ -11,7 +12,9 @@ import com.management_system.utilities.entities.api.request.Pagination;
 import com.management_system.utilities.entities.database.MongoDbEntity;
 import com.management_system.utilities.entities.exceptions.DataNotFoundException;
 import com.management_system.utilities.entities.exceptions.IdNotFoundException;
+import com.management_system.utilities.entities.exceptions.InvalidArgumentsException;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -107,48 +110,101 @@ public class DbUtils {
      * @param <U>         class type of result objects
      * @return a list of result objects after querying the database using data from request
      */
-    public <T extends FilterOption, U> List<U> filterData(FilterRequest request, Class<U> targetClass) {
-        Criteria criteria = new Criteria();
-        Map<String, Object> optionMap = request.getFilterOption().toMap();
-        Pagination pagination = request.getPagination();
-        Sort sort = getSortFromRequestFilterSort(request.getSorts());
+    @SneakyThrows
+    public <T extends FilterOption, U extends MongoDbEntity> List<U> filterData(FilterRequest<T> request, Class<U> targetClass) {
+        if (targetClass == null) {
+            throw new InvalidArgumentsException("Target class must not be null");
+        } else if (request == null) {
+            return mongoTemplate.find(new Query(), targetClass);
+        } else {
+            Criteria criteria = new Criteria();
+            Map<String, Object> optionMap = request.getFilterOption().toMap();
+            Pagination pagination = request.getPagination();
+            Sort sort = getSortFromRequestFilterSort(request.getSorts());
 
-        for (String key : optionMap.keySet()) {
-            Object value = optionMap.get(key);
+            for (String key : optionMap.keySet()) {
+                Object value = optionMap.get(key);
 
-            if (value != null) {
-                // search regex
-                if ((key.contains("name") || key.contains("email") || key.contains("address") || key.contains("phone_number")) &&
-                        !value.toString().isBlank()) {
-                    criteria.and(key).regex(".*" + value + ".*", "i");
-                }
-                // search exact elements in a field with type List
-                else if (value instanceof List) {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    List<String> list = objectMapper.convertValue(value, new TypeReference<>() {
-                    });
-                    criteria.and(key).all(list);
-                }
-                // search exactly
-                else {
-                    criteria.and(key).is(value);
+                if (value != null) {
+                    // search regex
+                    if ((key.contains("name") || key.contains("email") || key.contains("address") || key.contains("phone_number")) &&
+                            !value.toString().isBlank()) {
+                        criteria.and(key).regex(".*" + value + ".*", "i");
+                    }
+                    // search exact elements in a field with type List
+                    else if (value instanceof List) {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        List<String> list = objectMapper.convertValue(value, new TypeReference<>() {});
+                        criteria.and(key).all(list);
+                    }
+                    // search exactly
+                    else {
+                        criteria.and(key).is(value);
+                    }
                 }
             }
+
+            Query query = new Query().addCriteria(criteria);
+
+            if (pagination != null && pagination.getPage() > 0 && pagination.getSize() > 0) {
+                query.with(PageRequest.of(pagination.getPage() - 1, pagination.getSize()));
+            } else {
+                query.with(PageRequest.of(0, ConstantValue.DEFAULT_PAGE_SIZE));
+            }
+
+            if (sort != null) {
+                query.with(sort);
+            }
+
+            return mongoTemplate.find(query, targetClass);
         }
+    }
 
-        Query query = new Query().addCriteria(criteria);
 
-        if (pagination != null && pagination.getPage() > 0 && pagination.getSize() > 0) {
-            query.with(PageRequest.of(pagination.getPage() - 1, pagination.getSize()));
+    /**
+     * Filter data to retrieve all
+     *
+     * @param request     filter request
+     * @param targetClass class type of results objects
+     * @param <U>         class type of result objects
+     * @return a list of result objects after querying the database using data from request
+     */
+    @SneakyThrows
+    public <U extends MongoDbEntity> List<U> filterData(ApiRequest request, Class<U> targetClass) {
+        if (targetClass == null) {
+            throw new InvalidArgumentsException("Target class must not be null");
+        } else if (request == null) {
+            return mongoTemplate.find(new Query(), targetClass);
         } else {
-            query.with(PageRequest.of(0, 20));
-        }
+            Criteria criteria = new Criteria();
+            Map<String, Object> optionMap = request.toMap();
 
-        if (sort != null) {
-            query.with(sort);
-        }
+            for (String key : optionMap.keySet()) {
+                Object value = optionMap.get(key);
 
-        return mongoTemplate.find(query, targetClass);
+                if (value != null) {
+                    // search regex
+                    if ((key.contains("name") || key.contains("email") || key.contains("address") || key.contains("phone_number")) &&
+                            !value.toString().isBlank()) {
+                        criteria.and(key).regex(".*" + value + ".*", "i");
+                    }
+                    // search exact elements in a field with type List
+                    else if (value instanceof List) {
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        List<String> list = objectMapper.convertValue(value, new TypeReference<>() {});
+                        criteria.and(key).all(list);
+                    }
+                    // search exactly
+                    else {
+                        criteria.and(key).is(value);
+                    }
+                }
+            }
+
+            Query query = new Query().addCriteria(criteria);
+
+            return mongoTemplate.find(query, targetClass);
+        }
     }
 
 

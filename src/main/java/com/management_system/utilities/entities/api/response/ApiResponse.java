@@ -1,7 +1,9 @@
 package com.management_system.utilities.entities.api.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.management_system.utilities.core.usecase.UseCase;
 import lombok.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
@@ -18,6 +20,8 @@ public class ApiResponse implements UseCase.OutputValue, Serializable {
     private String jwt;
     private String refreshToken;
     private HttpStatus status;
+    @JsonIgnore
+    private HttpHeaders headers;
 
     public ApiResponse(String result, Object content, HttpStatus status) {
         this.result = result;

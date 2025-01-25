@@ -2,6 +2,7 @@ package com.management_system.utilities.config.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.management_system.utilities.constant.ConstantValue;
 import com.management_system.utilities.constant.enumuration.ExceptionType;
 import com.management_system.utilities.constant.enumuration.ResponseResult;
 import com.management_system.utilities.entities.api.response.ApiResponse;
@@ -23,6 +24,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,12 +40,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = {AuthenticationException.class})
-    ResponseEntity<ApiResponse> handleAuthenticationException(AuthenticationException ex) {
+    protected ResponseEntity<ApiResponse> handleAuthenticationException(AuthenticationException ex) {
         ex.printStackTrace();
 
         return new ResponseEntity<>(ApiResponse.builder()
                 .result(ResponseResult.failed.name())
-                .content(ex.getMessage())
+                .content(ConstantValue.UNAUTHORIZED_ERROR_MESSAGE)
                 .message(ExceptionType.AUTHENTICATION.getValue())
                 .status(HttpStatus.UNAUTHORIZED)
                 .build(),
@@ -54,13 +56,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = {BadCredentialsException.class})
-    ResponseEntity<ApiResponse> handleBadCredentialsException(BadCredentialsException ex) {
+    protected ResponseEntity<ApiResponse> handleBadCredentialsException(BadCredentialsException ex) {
         ex.printStackTrace();
 
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result(ResponseResult.failed.name())
-                        .content(ex.getMessage())
+                        .content(ConstantValue.UNAUTHORIZED_ERROR_MESSAGE)
                         .message(ExceptionType.AUTHENTICATION.getValue())
                         .status(HttpStatus.UNAUTHORIZED)
                         .build(),
@@ -71,13 +73,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = {AccessDeniedException.class})
-    ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException ex) {
+    protected ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException ex) {
         ex.printStackTrace();
 
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result(ResponseResult.failed.name())
-                        .content(ex.getMessage())
+                        .content(ConstantValue.ACCESS_ERROR_MESSAGE)
                         .message(ExceptionType.ACCESS.getValue())
                         .status(HttpStatus.FORBIDDEN)
                         .build(),
@@ -88,13 +90,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {FirebaseMessagingException.class})
-    ResponseEntity<ApiResponse> handleFirebaseMessagingException(FirebaseMessagingException ex) {
+    protected ResponseEntity<ApiResponse> handleFirebaseMessagingException(FirebaseMessagingException ex) {
         ex.printStackTrace();
 
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result(ResponseResult.failed.name())
-                        .content(ex.getMessage())
+                        .content(ConstantValue.INTERNAL_SERVER_ERROR_MESSAGE)
                         .message(ExceptionType.FIREBASE.getValue())
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .build(),
@@ -105,7 +107,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ExceptionHandler(value = {DataNotFoundException.class})
-    ResponseEntity<ApiResponse> handleDataNotFoundException(DataNotFoundException ex) {
+    protected ResponseEntity<ApiResponse> handleDataNotFoundException(DataNotFoundException ex) {
         ex.printStackTrace();
 
         return new ResponseEntity<>(
@@ -122,7 +124,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = {IdNotFoundException.class})
-    ResponseEntity<ApiResponse> handleIdNotFoundException(IdNotFoundException ex) {
+    protected ResponseEntity<ApiResponse> handleIdNotFoundException(IdNotFoundException ex) {
         ex.printStackTrace();
 
         return new ResponseEntity<>(
@@ -139,7 +141,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {DuplicateKeyException.class})
-    ResponseEntity<ApiResponse> handleMongoWriteException(DuplicateKeyException ex) {
+    protected ResponseEntity<ApiResponse> handleMongoWriteException(DuplicateKeyException ex) {
         ex.printStackTrace();
 
         if (ex.getCause() instanceof MongoWriteException mongoWriteEx) {
@@ -186,7 +188,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse> handleConstraintViolationException(ConstraintViolationException ex) {
+    protected ResponseEntity<ApiResponse> handleConstraintViolationException(ConstraintViolationException ex) {
         String[] errorMessage = ex.getConstraintViolations().stream()
                 .map(constraintViolation -> {
                     StringBuilder builder = new StringBuilder();
@@ -213,7 +215,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = {ExpiredJwtException.class})
-    ResponseEntity<ApiResponse> handleExpiredJwtException(ExpiredJwtException ex) {
+    protected ResponseEntity<ApiResponse> handleExpiredJwtException(ExpiredJwtException ex) {
         ex.printStackTrace();
 
         return new ResponseEntity<>(
@@ -230,7 +232,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {InvalidFormatException.class})
-    ResponseEntity<ApiResponse> handleInvalidFormatException(InvalidFormatException ex) {
+    protected ResponseEntity<ApiResponse> handleInvalidFormatException(InvalidFormatException ex) {
         ex.printStackTrace();
 
         return new ResponseEntity<>(
@@ -305,7 +307,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result(ResponseResult.failed.name())
-                        .content(ex.getMessage())
+                        .content(ConstantValue.INTERNAL_SERVER_ERROR_MESSAGE)
                         .message(ExceptionType.INVALID_PARAMETER.getValue())
                         .status(HttpStatus.BAD_REQUEST)
                         .build(),
@@ -329,6 +331,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    @Override
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ex.printStackTrace();
+
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result(ResponseResult.failed.name())
+                        .message(ExceptionType.FILE.getValue())
+                        .content("Field " + ex.getParameterName() + " must not be null")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );    }
+
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @Override
@@ -338,7 +356,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ApiResponse.builder()
                         .result(ResponseResult.failed.name())
-                        .content("Internal server error")
+                        .content(ConstantValue.INTERNAL_SERVER_ERROR_MESSAGE)
                         .message(ExceptionType.INTERNAL.getValue())
                         .status(HttpStatus.valueOf(status.value()))
                         .build(),

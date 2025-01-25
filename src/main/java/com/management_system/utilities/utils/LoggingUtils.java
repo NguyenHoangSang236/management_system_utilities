@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -148,6 +145,7 @@ public class LoggingUtils {
             String data = "\n\n------------------------LOGGING RESPONSE-----------------------------------\n" +
                     "[REQUEST-ID]: " + requestId.toString() + "\n" +
                     "[URL]: " + request.getRequestURL() + "\n" +
+                    "[HEADERS]: " + getAllHeadersFromResponse(response) + "\n" +
                     "[STATUS CODE]: " + statusCode + "\n" +
                     "[BODY RESPONSE]: " + valueParsingUtils.parseObjectToString(body) +
                     "\n------------------------END LOGGING RESPONSE-----------------------------------\n";
@@ -211,5 +209,17 @@ public class LoggingUtils {
         ObjectMapper objectMapper = new ObjectMapper();
 
         return objectMapper.writeValueAsString(request);
+    }
+
+    private String getAllHeadersFromResponse(HttpServletResponse response) {
+        Collection<String> headerNames = response.getHeaderNames();
+        StringBuilder builder = new StringBuilder();
+
+        for(String headerName: headerNames) {
+            String value = response.getHeader(headerName);
+            builder.append("---").append(headerName).append(" : ").append(value).append("\n");
+        }
+
+        return builder.toString();
     }
 }
