@@ -14,6 +14,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.lang.model.type.ErrorType;
+import java.util.Arrays;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -330,6 +335,41 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.BAD_REQUEST
         );
     }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<Object> handleEnumConversionError(MethodArgumentTypeMismatchException ex) {
+        if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
+            String message = String.format(
+                    "Invalid value '%s' for field '%s'. Expected one of: %s",
+                    ex.getValue(),
+                    ex.getName(),
+                    Arrays.toString(ex.getRequiredType().getEnumConstants())
+            );
+            return new ResponseEntity<>(
+                    ApiResponse.builder()
+                            .result(ResponseResult.failed.name())
+                            .content(message)
+                            .message(ExceptionType.INVALID_PARAMETER.getValue())
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build(),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        // Xử lý các trường hợp khác
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result(ResponseResult.failed.name())
+                        .content("Invalid input")
+                        .message(ExceptionType.INVALID_PARAMETER.getValue())
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
 
     @Override
     @ResponseBody

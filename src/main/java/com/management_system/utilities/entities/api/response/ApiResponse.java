@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,6 +21,7 @@ public class ApiResponse implements UseCase.OutputValue, Serializable {
     private String jwt;
     private String refreshToken;
     private HttpStatus status;
+    private List<String> errors;
     @JsonIgnore
     private HttpHeaders headers;
 
@@ -48,7 +50,8 @@ public class ApiResponse implements UseCase.OutputValue, Serializable {
                 ", message='" + message + '\'' +
                 ", jwt='" + jwt + '\'' +
                 ", refreshToken='" + refreshToken + '\'' +
-                ", status=" + status +
+                ", status='" + status.toString() + '\'' +
+                ", errors='" + errors + '\'' +
                 '}';
     }
 }

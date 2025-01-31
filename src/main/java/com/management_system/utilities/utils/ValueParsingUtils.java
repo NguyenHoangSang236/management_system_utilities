@@ -1,12 +1,17 @@
 package com.management_system.utilities.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.management_system.utilities.constant.enumuration.ResponseResult;
 import com.management_system.utilities.entities.api.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ValueParsingUtils {
@@ -20,6 +25,30 @@ public class ValueParsingUtils {
             ApiResponse res = new ApiResponse(ResponseResult.failed.name(), "Error at JSON parsing", HttpStatus.INTERNAL_SERVER_ERROR);
             return res.toString();
         }
+    }
+
+
+    // parse list object to list map
+    public List<Map<String, Object>> parseObjectListToHashMapList(List<?> objects) {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        if (objects == null || objects.isEmpty()) {
+            return result;
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        for (Object object : objects) {
+            try {
+                Map<String, Object> map = objectMapper.convertValue(object, new TypeReference<Map<String, Object>>() {});
+                result.add(map);
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.add(Collections.emptyMap());
+            }
+        }
+
+        return result;
     }
 
 
