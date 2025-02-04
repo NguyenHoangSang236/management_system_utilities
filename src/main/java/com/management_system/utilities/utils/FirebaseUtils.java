@@ -8,6 +8,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.management_system.utilities.config.meta_data.SystemConfigKeyName;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,22 +20,34 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FirebaseUtils {
     final SystemConfigEnvUtils credentialsUtils;
 
     private String getUploadFileUrl(File file, String fileName) throws IOException {
-        String firebaseStorageBucketName = credentialsUtils.getCredentials(SystemConfigKeyName.FIREBASE_STORAGE_BUCKET_NAME);
-        BlobId blobId = BlobId.of(firebaseStorageBucketName, fileName);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
-        InputStream inputStream = FirebaseUtils.class.getClassLoader().getResourceAsStream(credentialsUtils.getCredentials(SystemConfigKeyName.FIREBASE_PRIVATE_KEY_FILE_PATH));
-        Credentials credentials = GoogleCredentials.fromStream(inputStream);
-        Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+        try {
+            String firebaseStorageBucketName = credentialsUtils.getCredentials(SystemConfigKeyName.FIREBASE_STORAGE_BUCKET_NAME);
 
-        String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/" + firebaseStorageBucketName + "/o/%s?alt=media";
-        return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
+            BlobId blobId = BlobId.of(firebaseStorageBucketName, fileName);
+            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("media").build();
+
+            InputStream inputStream = FirebaseUtils.class.getClassLoader().getResourceAsStream(credentialsUtils.getCredentials(SystemConfigKeyName.FIREBASE_PRIVATE_KEY_FILE_PATH));
+            Credentials credentials = GoogleCredentials.fromStream(inputStream);
+
+            Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+            storage.create(blobInfo, Files.readAllBytes(file.toPath()));
+
+            String DOWNLOAD_URL = "https://firebasestorage.googleapis.com/v0/b/" + firebaseStorageBucketName + "/o/%s?alt=media";
+
+            return String.format(DOWNLOAD_URL, URLEncoder.encode(fileName, StandardCharsets.UTF_8));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
     }
 
 
@@ -42,7 +55,6 @@ public class FirebaseUtils {
         File tempFile = new File(fileName);
         try (FileOutputStream fos = new FileOutputStream(tempFile)) {
             fos.write(multipartFile.getBytes());
-            fos.close();
         }
         return tempFile;
     }
@@ -69,7 +81,37 @@ public class FirebaseUtils {
             return URL;
         } catch (Exception e) {
             e.printStackTrace();
-            return e.getMessage();
+
+            return "Error to upload file to Firebase storage";
+        }
+    }
+
+    public boolean delete(String fileName) {
+        try {
+            if(fileName == null || fileName.isBlank()) {
+                log.error("File name must not be null");
+
+                return false;
+            }
+
+            String firebaseStorageBucketName = credentialsUtils.getCredentials(SystemConfigKeyName.FIREBASE_STORAGE_BUCKET_NAME);
+            BlobId blobId = BlobId.of(firebaseStorageBucketName, fileName);
+
+            if(blobId == null) {
+                log.error("{} does not exist in Firebase storage", fileName);
+            }
+
+            InputStream inputStream = FirebaseUtils.class.getClassLoader()
+                    .getResourceAsStream(credentialsUtils.getCredentials(SystemConfigKeyName.FIREBASE_PRIVATE_KEY_FILE_PATH));
+
+            Credentials credentials = GoogleCredentials.fromStream(inputStream);
+            Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+
+            return storage.delete(blobId);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return false;
         }
     }
 }

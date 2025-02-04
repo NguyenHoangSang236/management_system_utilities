@@ -14,6 +14,7 @@ public class InsertValidator implements ConstraintValidator<InsertValid, Object>
     String nullMessage;
     boolean isPhoneNumber;
     boolean isEmail;
+    boolean nullable;
 
     @Override
     public void initialize(InsertValid constraintAnnotation) {
@@ -23,33 +24,42 @@ public class InsertValidator implements ConstraintValidator<InsertValid, Object>
         this.phoneMessage = constraintAnnotation.phoneMessage();
         this.isPhoneNumber = constraintAnnotation.isPhoneNumber();
         this.isEmail = constraintAnnotation.isEmail();
+        this.nullable = constraintAnnotation.nullable();
 
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        if (value == null || value.toString().isBlank()) {
+        if (!this.nullable && (value == null || value.toString().isBlank())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(this.nullMessage).addConstraintViolation();
 
             return false;
         }
+        else {
+            if(value == null || value.toString().isBlank()) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(this.nullMessage).addConstraintViolation();
 
-        if (isEmail && !checkUtils.isValidEmail(value.toString())) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(this.emailMessage).addConstraintViolation();
+                return false;
+            }
 
-            return false;
+            if (isEmail && !checkUtils.isValidEmail(value.toString())) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(this.emailMessage).addConstraintViolation();
+
+                return false;
+            }
+
+            if (isPhoneNumber && !checkUtils.isValidPhoneNumber(value.toString())) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(this.phoneMessage).addConstraintViolation();
+
+                return false;
+            }
+
+            return true;
         }
-
-        if (isPhoneNumber && !checkUtils.isValidPhoneNumber(value.toString())) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(this.phoneMessage).addConstraintViolation();
-
-            return false;
-        }
-
-        return true;
     }
 }

@@ -1,5 +1,6 @@
 package com.management_system.utilities.config.exception;
 
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.management_system.utilities.constant.ConstantValue;
@@ -329,7 +330,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ApiResponse.builder()
                         .result(ResponseResult.failed.name())
                         .message(ExceptionType.FILE.getValue())
-                        .content(ex.getMessage())
+                        .content(ConstantValue.INTERNAL_SERVER_ERROR_MESSAGE)
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build(),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<Object> handleJacksonException(JacksonException ex) {
+        ex.printStackTrace();
+
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .result(ResponseResult.failed.name())
+                        .message(ExceptionType.INVALID_FORMAT.getValue())
+                        .content(ConstantValue.INTERNAL_SERVER_ERROR_MESSAGE)
                         .status(HttpStatus.BAD_REQUEST)
                         .build(),
                 HttpStatus.BAD_REQUEST

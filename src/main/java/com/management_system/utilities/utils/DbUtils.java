@@ -176,32 +176,45 @@ public class DbUtils {
         } else if (request == null) {
             return mongoTemplate.find(new Query(), targetClass);
         } else {
-            Criteria criteria = new Criteria();
             Map<String, Object> optionMap = request.toMap();
+            List<Criteria> criteriaList = new ArrayList<>();
+            Query query = new Query();
 
             for (String key : optionMap.keySet()) {
+                Criteria criteria = null;
                 Object value = optionMap.get(key);
 
-                if (value != null) {
+                if (value != null && !value.toString().isBlank()) {
                     // search regex
-                    if ((key.contains("name") || key.contains("email") || key.contains("address") || key.contains("phone_number")) &&
-                            !value.toString().isBlank()) {
-                        criteria.and(key).regex(".*" + value + ".*", "i");
+                    if (key.matches(".*(name|email|address|phone_number).*")) {
+                        criteria = Criteria.where(key).regex(".*" + value + ".*", "i");
                     }
                     // search exact elements in a field with type List
                     else if (value instanceof List) {
                         ObjectMapper objectMapper = new ObjectMapper();
                         List<String> list = objectMapper.convertValue(value, new TypeReference<>() {});
-                        criteria.and(key).all(list);
+                        criteria = Criteria.where(key).in(list);
+                    }
+                    // search in range for start date (key syntax: start_<whatever>_date)
+                    else if (key.startsWith("start_") && key.endsWith("_date")) {
+                        criteria = Criteria.where(key.replace("start_", "")).gte(value);
+                    }
+                    // search in range for end date (key syntax: end_<whatever>_date)
+                    else if (key.startsWith("end_") && key.endsWith("_date")) {
+                        criteria = Criteria.where(key.replace("end_", "")).lte(value);
                     }
                     // search exactly
                     else {
-                        criteria.and(key).is(value);
+                        criteria = Criteria.where(key).is(value);
                     }
+
+                    criteriaList.add(criteria);
                 }
             }
 
-            Query query = new Query().addCriteria(criteria);
+            if (!criteriaList.isEmpty()) {
+                query.addCriteria(new Criteria().andOperator(criteriaList));
+            }
 
             return mongoTemplate.find(query, targetClass);
         }

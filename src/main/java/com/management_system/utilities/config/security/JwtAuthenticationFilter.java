@@ -46,7 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final TokenInfo tokenInfo;
 
         try {
-            SecurityUtils.storeSecurityContext();
             response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, HEAD, OPTIONS, DELETE");
@@ -70,6 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext() == null ||
                         SecurityContextHolder.getContext() instanceof AnonymousAuthenticationToken) {
                     logger.error("Client JWT expired");
+
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType("application/json");
                     response.getWriter().write(
@@ -103,8 +103,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     );
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                    SecurityUtils.storeSecurityContext();
                 }
             }
 

@@ -22,6 +22,8 @@ public @interface InsertValid {
 
     boolean isEmail() default false;
 
+    boolean nullable() default false;
+
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};

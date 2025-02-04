@@ -7,10 +7,12 @@ import com.management_system.utilities.entities.api.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,12 +57,17 @@ public class ValueParsingUtils {
     // parse a string to ID string with given pattern
     public String parseStringToId(String spacePattern, boolean isUpperCase, String... str) {
         StringBuilder strBuilder = new StringBuilder();
+        Pattern specialCharsPattern = Pattern.compile("[^a-zA-Z0-9\\s]");
 
         for (int i = 0; i < str.length; i++) {
             if (str[i] != null) {
+                String normalized = Normalizer.normalize(str[i], Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+
+                String cleaned = specialCharsPattern.matcher(normalized).replaceAll("");
+
                 strBuilder.append(isUpperCase
-                        ? str[i].trim().replace(" ", spacePattern).toUpperCase()
-                        : str[i].trim().replace(" ", spacePattern).toLowerCase()
+                        ? cleaned.trim().replace(" ", spacePattern).toUpperCase()
+                        : cleaned.trim().replace(" ", spacePattern).toLowerCase()
                 );
 
                 if (i != str.length - 1) {
@@ -68,6 +75,8 @@ public class ValueParsingUtils {
                 }
             }
         }
+
+        System.out.println(strBuilder);
 
         return strBuilder.toString();
     }
